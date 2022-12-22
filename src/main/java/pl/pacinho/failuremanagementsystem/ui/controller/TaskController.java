@@ -11,6 +11,7 @@ import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.service.TaskService;
 import pl.pacinho.failuremanagementsystem.service.UserService;
 import pl.pacinho.failuremanagementsystem.ui.config.UIConfig;
+import pl.pacinho.failuremanagementsystem.ui.model.NewMessage;
 import pl.pacinho.failuremanagementsystem.ui.model.NewTaskDto;
 import pl.pacinho.failuremanagementsystem.ui.model.TaskDto;
 import pl.pacinho.failuremanagementsystem.ui.model.TaskParams;
@@ -39,8 +40,17 @@ public class TaskController {
     @GetMapping(UIConfig.TASK_PAGE)
     public String newTask(@PathVariable("number") long number,
                           Model model) {
-        model.addAttribute("taskParams", TaskParams.instance());
+//        model.addAttribute("taskParams", TaskParams.instance());
         model.addAttribute("task", taskService.findByNumber(number));
+        model.addAttribute("message", new NewMessage());
         return "task";
+    }
+
+    @PostMapping(UIConfig.TASK_SEND_MESSAGE)
+    public String sendMessage(@PathVariable("number") long number,
+                              Authentication authentication,
+                              NewMessage newMessage) {
+        taskService.addMessage(number, newMessage, userService.getByLogin(authentication.getName()));
+        return "redirect:" + UIConfig.TASK + "/" + number;
     }
 }

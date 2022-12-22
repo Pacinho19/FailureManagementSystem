@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pacinho.failuremanagementsystem.exception.TaskNotFoundException;
+import pl.pacinho.failuremanagementsystem.model.entity.TaskMessage;
+import pl.pacinho.failuremanagementsystem.ui.model.NewMessage;
 import pl.pacinho.failuremanagementsystem.ui.model.mapper.TaskDtoMapper;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
@@ -29,5 +31,15 @@ public class TaskService {
                 taskRepository.findById(number)
                         .orElseThrow(() -> new TaskNotFoundException(number))
         );
+    }
+
+    public Task getByNumber(long number) {
+        return taskRepository.getById(number);
+    }
+
+    @Transactional
+    public void addMessage(long number, NewMessage newMessage, User user) {
+        Task task = getByNumber(number);
+        task.addMessage(user,newMessage.getText());
     }
 }

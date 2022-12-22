@@ -75,10 +75,10 @@ public class Task {
         this.attachments = new ArrayList<>();
         this.messages = new ArrayList<>();
         this.status = Status.NEW;
-        addMessages(owner, message);
+        addMessage(owner, message);
     }
 
-    private void addMessages(User owner, String message) {
+    public void addMessage(User owner, String message) {
         this.messages.add(
                 new TaskMessage(message, owner, this)
         );
