@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Falsi Home</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+
+    <style>
+        .checkbox-xl .form-check-input {
+            top: 1.2rem;
+            scale: 2.5;
+            margin-left: 1%;
+        }
+    </style>
+
+    <script>
+        function init() {
+            let deadlineDate = document.getElementById("deadlineDate");
+            deadlineDate.min = getTomorrow();
+            deadlineDate.value = deadlineDate.min;
+        }
+
+        function getTomorrow() {
+            let date = new Date();
+            date.setDate(date.getDate() + 1);
+            return date.toISOString().slice(0, 10);;
+        }
+    </script>
+</head>
+
+<body onload="init();">
+
+    <div th:replace="fragments/topnav :: navbar" />
+
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="card" style="margin-top:2%">
+                <div class="card-header">
+                    <h3>Create new task</h3>
+                </div>
+                <form th:action="@{/falsi/task/new}" th:object="${task}" method="post">
+                    <div class="card-body">
+
+                        <!--                    Task Department -->
+                        <div class="form-group row">
+                            <label for="department" class="col-sm-2 col-form-label"
+                                style="text-align:center;font-size:18px">Department </label>
+                            <div class="col-sm-10">
+                                <select required th:field="*{targetDepartment}" id="department"
+                                    style="width: 100%;height: 100%;">
+                                    <option th:each="tt : ${taskParams.departments}" th:value="${tt}" th:text="${tt}"
+                                        th:selected="${tt.name==task.targetDepartment.name}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <!--                    Task Type-->
+                        <div class="form-group row">
+                            <label for="taskType" class="col-sm-2 col-form-label"
+                                style="text-align:center;font-size:18px">Task
+                                type</label>
+                            <div class="col-sm-10">
+                                <select required th:field="*{taskType}" id="taskType" style="width: 100%;height: 100%;">
+                                    <option th:each="tt : ${taskParams.taskTypes}" th:value="${tt}" th:text="${tt}"
+                                        th:selected="${tt.name==task.taskType.name}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!--                    Task Event-->
+                        <div class="form-group row">
+                            <label for="event" class="col-sm-2 col-form-label"
+                                style="text-align:center;font-size:18px">Event</label>
+                            <div class="col-sm-10">
+                                <select required th:field="*{event}" id="event" style="width: 100%;height: 100%;">
+                                    <option th:each="tt : ${taskParams.events}" th:value="${tt}" th:text="${tt}"
+                                        th:selected="${tt.name==task.event.name}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!--                    Task Priority-->
+                        <div class="form-group row">
+                            <label for="priority" class="col-sm-2 col-form-label"
+                                style="text-align:center;font-size:18px">Priority</label>
+                            <div class="col-sm-10">
+                                <select required th:field="*{priority}" id="priority" style="width: 100%;height: 100%;">
+                                    <option th:each="tt : ${taskParams.priorities}" th:value="${tt}" th:text="${tt}"
+                                        th:selected="${tt.name==task.priority.name}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <!--                    Task Title-->
+                        <div class="form-group row">
+                            <label for="title" class="col-sm-2 col-form-label"
+                                style="text-align:center;font-size:18px">Title</label>
+                            <div class="col-sm-10">
+                                <input required type="text" id="title" th:field="*{title}"
+                                    style="width: 100%;height: 100%;">
+                            </div>
+                        </div>
+
+                        <!--                    Task Message-->
+                        <div class="form-group row">
+                            <label for="description" class="col-sm-2 col-form-label"
+                                style="text-align:center;font-size:18px">Description</label>
+                            <div class="col-sm-10">
+                                <textarea required id="description" th:field="*{message}" rows="5" cols="2"
+                                    style="width:100%"></textarea>
+                            </div>
+                        </div>
+
+                        <!--                    Task Purpose-->
+                        <div class="form-group row">
+                            <label for="purpose" class="col-sm-2 col-form-label"
+                                style="text-align:center;font-size:18px">Purpose</label>
+                            <div class="col-sm-10">
+                                <input required type="text" id="purpose" th:field="*{purpose}"
+                                    style="width: 100%;height: 100%;">
+                            </div>
+                        </div>
+
+                        <!--                    Task change assumptions-->
+                        <div class="form-group row checkbox-xl">
+                            <label for="changeAssumptions" class="col-sm-2 col-form-label"
+                                style="text-align:center;font-size:18px">Change Assumptions</label>
+                            <div class="col-sm-10">
+                                <input class="form-check-input" type="checkbox" checked id="changeAssumptions"
+                                    th:field="*{changeAssumptions}"></check>
+                            </div>
+                        </div>
+
+                        <!--                    Task deadline date-->
+                        <div class="form-group row checkbox-xl">
+                            <label for="deadlineDate" class="col-sm-2 col-form-label"
+                                style="text-align:center;font-size:18px">Deadline date</label>
+                            <div class="col-sm-10">
+                                <input required type="date" id="deadlineDate" name="deadlineDate"
+                                    th:field="*{deadlineDate}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer" style="text-align:center">
+                        <button class="btn btn-primary" type="submit"
+                            style="width:90%;margin-left:auto;margin-right:auto">
+                            Create
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+
+</body>
+
+</html>

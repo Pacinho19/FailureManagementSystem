@@ -1,0 +1,26 @@
+<nav style="width:100%" th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-light"
+     xmlns:th="http://www.w3.org/1999/xhtml">
+    <a href="/falsi/home">
+        <img th:src="@{/img/logo.png}" width="70px" height="75px" style="float:left;margin-left:2%;">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto" style="margin-left:10px">
+            <li class="nav-item">
+                <a style="color:black" class="nav-link bi bi-folder-plus"
+                   href="/falsi/task/new">New Tasks</a>
+            </li>
+            <li class="nav-item">
+                <a style="color:black" class="nav-link bi bi-person-lines-fill"
+                   href="/falsi/task/my">My Tasks</a>
+            </li>
+        </ul>
+<!--        <span th:text="${user.firstName + ' ' + user.lastName}"></span>-->
+        <a class="nav-link bi bi-power" href="/logout">Logout</a>
+    </div>
+
+</nav>
