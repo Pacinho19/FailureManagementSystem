@@ -30,4 +30,9 @@ public class TaskUtils {
                 .filter(filter)
                 .toList();
     }
+
+    public static void checkTask(TaskDto task, User user) {
+        if (task.getTargetDepartment() != user.getDepartment())
+            throw new IllegalStateException("No permission for open task number " + task.getNumber());
+    }
 }

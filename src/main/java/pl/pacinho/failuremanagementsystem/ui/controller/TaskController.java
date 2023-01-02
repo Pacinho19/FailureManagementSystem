@@ -15,6 +15,7 @@ import pl.pacinho.failuremanagementsystem.ui.model.NewMessage;
 import pl.pacinho.failuremanagementsystem.ui.model.NewTaskDto;
 import pl.pacinho.failuremanagementsystem.ui.model.TaskDto;
 import pl.pacinho.failuremanagementsystem.ui.model.TaskParams;
+import pl.pacinho.failuremanagementsystem.ui.tools.TaskUtils;
 
 @RequiredArgsConstructor
 @Controller
@@ -38,10 +39,19 @@ public class TaskController {
     }
 
     @GetMapping(UIConfig.TASK_PAGE)
-    public String newTask(@PathVariable("number") long number,
-                          Model model) {
-//        model.addAttribute("taskParams", TaskParams.instance());
-        model.addAttribute("task", taskService.findByNumber(number));
+    public String taskPage(@PathVariable("number") long number,
+                          Model model,
+                          Authentication authentication) {
+
+        TaskDto task;
+        try {
+            task = taskService.findByNumber(number);
+            TaskUtils.checkTask(task, userService.getByLogin(authentication.getName()));
+        } catch (Exception ex) {
+            model.addAttribute("error", ex.getMessage());
+            return "task";
+        }
+        model.addAttribute("task", task);
         model.addAttribute("message", new NewMessage());
         return "task";
     }

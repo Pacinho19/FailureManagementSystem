@@ -68,7 +68,13 @@
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
-            <div class="card" style="margin-top:2%">
+
+            <!--Error Message Panel-->
+            <div th:if="${error!=null}" style="text-align:center; margin-top:1%" class="alert alert-danger">
+                <h4 class="error" th:text="${error}">Error message</h4>
+            </div>
+
+            <div class="card" style="margin-top:2%" th:if="${task!=null}">
                 <div class="card-header">
                     <h3>Task number: <span th:text="${task.number}"></span></h3>
                 </div>
