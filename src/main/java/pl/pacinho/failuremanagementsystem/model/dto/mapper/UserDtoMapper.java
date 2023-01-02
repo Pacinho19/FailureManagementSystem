@@ -14,7 +14,7 @@ public class UserDtoMapper {
 
     public static UserDto parseToDto(User user) {
         if (user == null) return null;
-        return new UserDto(user.getFirstName(), user.getLastName(), user.getDepartment());
+        return new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getDepartment());
     }
 
 }

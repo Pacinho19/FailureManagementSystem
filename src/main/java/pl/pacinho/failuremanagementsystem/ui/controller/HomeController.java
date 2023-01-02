@@ -7,21 +7,30 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import pl.pacinho.failuremanagementsystem.model.dto.mapper.UserDtoMapper;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
+import pl.pacinho.failuremanagementsystem.model.enums.TaskKind;
+import pl.pacinho.failuremanagementsystem.service.TaskService;
 import pl.pacinho.failuremanagementsystem.service.UserService;
 import pl.pacinho.failuremanagementsystem.ui.config.UIConfig;
+import pl.pacinho.failuremanagementsystem.ui.model.TaskDto;
+import pl.pacinho.failuremanagementsystem.ui.tools.TaskUtils;
+
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
 
     private final UserService userService;
+    private final TaskService taskService;
 
     @GetMapping(UIConfig.PREFIX)
-    public String homeFalsi(){
+    public String homeFalsi() {
         return "redirect:" + UIConfig.HOME;
     }
+
     @GetMapping
-    public String homeEmpty(){
+    public String homeEmpty() {
         return "redirect:" + UIConfig.HOME;
     }
 
@@ -31,6 +40,16 @@ public class HomeController {
 
         User user = userService.getByLogin(authentication.getName());
         model.addAttribute("user", UserDtoMapper.parseToDto(user));
+
+        Map<TaskKind, List<TaskDto>> tasksKinds = TaskUtils.groupByKind(
+                taskService.findByDepartment(user.getDepartment()),
+                user
+        );
+
+        model.addAttribute("myTasks", tasksKinds.get(TaskKind.OWN));
+        model.addAttribute("departmentTasks", tasksKinds.get(TaskKind.DEP));
+        model.addAttribute("doneTasks", tasksKinds.get(TaskKind.DONE));
+
         return "home";
     }
 }

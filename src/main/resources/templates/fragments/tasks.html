@@ -1,0 +1,35 @@
+<div style="margin-top:1%;" th:fragment="tasks(tasks, title)">
+
+    <table class="table table-striped">
+        <thead>
+        <tr style="background-color:lightgray;">
+            <th colspan="8" style="text-align:left;color:white" th:text="${title}">aqaa</th>
+        </tr>
+        <tr>
+            <th>ID</th>
+            <th>Owner</th>
+            <th>Creation date</th>
+            <th>Priority</th>
+            <th>Queue</th>
+            <th>Title</th>
+            <th>Executor</th>
+            <th>Deadline</th>
+        </tr>
+        </thead>
+        <tbody th:if="${tasks!=null}">
+        <tr th:each="task:${tasks}">
+            <td>
+                <a th:href="${'/falsi/task/' + task.number}" th:text="${task.number}"></a>
+            </td>
+            <td th:text="${task.owner.firstName + ' ' + task.owner.lastName}"></td>
+            <td th:text="${#temporals.format(task.creationDate, 'dd-MM-yyyy')}"></td>
+            <td th:text="${task.priority}"></td>
+            <td>-</td>
+            <td th:text="${task.title}"></td>
+            <td th:if="${task.executor!=null}" th:text="${task.executor.firstName + ' ' + task.executor.lastName}"></td>
+            <td th:if="${task.executor==null}">-</td>
+            <td th:text="${task.getDeadlineDays()}" th:style="${task.getDeadlineDays() < 0 ? 'color:red;font-weight: bold;' : ''}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>

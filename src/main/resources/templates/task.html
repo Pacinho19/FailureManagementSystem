@@ -81,7 +81,7 @@
                                 style="text-align:center;font-size:18px;border-style: groove;width:100%">Priority</label>
                         </div>
                         <div class="col-sm-10">
-                            <h3 id="priority" th:text="${task.priority.name}" style="height:100%;width:100%"></h3>
+                            <h3 id="priority" th:text="${task.priority.name}" style="height:100%;width:100%">Priority</h3>
                         </div>
                     </div>
 
@@ -92,7 +92,7 @@
                                 style="text-align:center;font-size:18px;border-style: groove;width:100%">Type</label>
                         </div>
                         <div class="col-sm-10">
-                            <h3 id="type" th:text="${task.taskType.name}" style="height:100%;width:100%"></h3>
+                            <h3 id="type" th:text="${task.taskType.name}" style="height:100%;width:100%">Type</h3>
                         </div>
                     </div>
 
@@ -105,7 +105,8 @@
                         </div>
                         <div class="col-sm-10">
                             <h3 id="creationDate" th:text="${#temporals.format(task.creationDate, 'dd-MM-yyyy')}"
-                                style="height:100%;width:100%"></h3>
+                                style="height:100%;width:100%">Creation
+                                date</h3>
                         </div>
                     </div>
 
@@ -117,11 +118,11 @@
                                 date</label>
                         </div>
                         <div class="col-sm-10">
-                            <div class="row">
+                            <div class="row" style="width:100%;margin-left:0">
                                     <h3 id="deadlineDate" th:text="${#temporals.format(task.deadlineDate, 'dd-MM-yyyy')}"
-                                    style="height:100%"></h3>
+                                    style="height:100%;margin-left:0"> Deadline date</h3>
 
-                                    <h3 id="deadlineDaysLeft" style="margin-left: 1%;text-align: left;"></h3>
+                                    <h3 id="deadlineDaysLeft" style="margin-left: 1%;text-align: left;">Deadline days left</h3>
                             </div>
                         </div>
                     </div>
@@ -155,7 +156,7 @@
                             </div>
                         </div>
                         <div style="text-align:left" class="mt-2">
-                            <p style="text-align:left;font-size:25px;" class="comment-text"
+                            <p style="text-align:left;font-size:25px;white-space: pre-line;" class="comment-text"
                                 th:text="${comment.message}"></p>
                         </div>
                     </div>

@@ -1,13 +1,9 @@
 package pl.pacinho.failuremanagementsystem.ui.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
-import pl.pacinho.failuremanagementsystem.model.enums.Department;
-import pl.pacinho.failuremanagementsystem.model.enums.Event;
-import pl.pacinho.failuremanagementsystem.model.enums.Priority;
-import pl.pacinho.failuremanagementsystem.model.enums.TaskType;
+import pl.pacinho.failuremanagementsystem.model.enums.*;
 
 import java.time.LocalDate;
 
@@ -24,8 +20,6 @@ public abstract class TaskModel {
     private Priority priority;
     private String purpose;
     private boolean changeAssumptions;
-
-
-
+    private Status status;
 
 }
