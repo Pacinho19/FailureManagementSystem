@@ -1,11 +1,13 @@
 package pl.pacinho.failuremanagementsystem.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pacinho.failuremanagementsystem.exception.TaskNotFoundException;
 import pl.pacinho.failuremanagementsystem.model.entity.TaskMessage;
 import pl.pacinho.failuremanagementsystem.model.enums.Department;
+import pl.pacinho.failuremanagementsystem.model.enums.Status;
 import pl.pacinho.failuremanagementsystem.ui.model.NewMessage;
 import pl.pacinho.failuremanagementsystem.ui.model.mapper.TaskDtoMapper;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
@@ -51,5 +53,22 @@ public class TaskService {
                 .stream()
                 .map(TaskDtoMapper::toDto)
                 .toList();
+    }
+
+    @Transactional
+    public void assign(long number, User user) {
+        Task task = getByNumber(number);
+        if (task.getTargetDepartment() != user.getDepartment())
+            throw new IllegalStateException("Cannot assign task number " + number + ". No permission for task.");
+
+        if (task.getStatus() != Status.NEW)
+            throw new IllegalStateException("Cannot assign task number " + number + ". Task status: " + task.getStatus());
+
+        if (task.getExecutor() != null)
+            throw new IllegalStateException("Cannot assign task number " + number + ". Task just assign to " + task.getExecutor().getName());
+
+        task.setStatus(Status.IN_PROGRESS);
+        task.setExecutor(user);
+        task.addMessage(user, "Task in progress...");
     }
 }

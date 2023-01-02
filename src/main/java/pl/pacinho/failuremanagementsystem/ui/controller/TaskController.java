@@ -40,8 +40,8 @@ public class TaskController {
 
     @GetMapping(UIConfig.TASK_PAGE)
     public String taskPage(@PathVariable("number") long number,
-                          Model model,
-                          Authentication authentication) {
+                           Model model,
+                           Authentication authentication) {
 
         TaskDto task;
         try {
@@ -61,6 +61,19 @@ public class TaskController {
                               Authentication authentication,
                               NewMessage newMessage) {
         taskService.addMessage(number, newMessage, userService.getByLogin(authentication.getName()));
+        return "redirect:" + UIConfig.TASK + "/" + number;
+    }
+
+    @PostMapping(UIConfig.TASK_ASSIGN)
+    public String assignTask(@PathVariable("number") long number,
+                             Authentication authentication,
+                             Model model) {
+        try {
+            taskService.assign(number, userService.getByLogin(authentication.getName()));
+        } catch (Exception ex) {
+            model.addAttribute("error", ex.getMessage());
+            return "task";
+        }
         return "redirect:" + UIConfig.TASK + "/" + number;
     }
 }

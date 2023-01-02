@@ -48,6 +48,7 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -89,4 +90,5 @@ public class Task {
                 new Attachment(path, this.number)
         );
     }
+
 }
