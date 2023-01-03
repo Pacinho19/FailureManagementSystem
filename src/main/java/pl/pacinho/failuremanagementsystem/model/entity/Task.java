@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import pl.pacinho.failuremanagementsystem.model.enums.*;
+import pl.pacinho.failuremanagementsystem.model.enums.Status;
 
 import javax.persistence.*;
 import java.time.LocalDate;

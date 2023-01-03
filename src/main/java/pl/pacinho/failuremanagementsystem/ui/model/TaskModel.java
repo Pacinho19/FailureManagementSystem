@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import pl.pacinho.failuremanagementsystem.model.enums.*;
+import pl.pacinho.failuremanagementsystem.model.enums.Status;
 
 import java.time.LocalDate;
 

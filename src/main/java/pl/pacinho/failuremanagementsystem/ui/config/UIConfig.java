@@ -5,9 +5,8 @@ public class UIConfig {
     public static final String LOGIN = PREFIX + "/login";
     public static final String HOME = PREFIX + "/home";
     public static final String TASK = PREFIX + "/task";
-
     public static final String NEW_TASK = TASK + "/new";
     public static final String TASK_PAGE = TASK + "/{number}";
     public static final String TASK_SEND_MESSAGE = TASK_PAGE + "/message";
-    public static final String TASK_ASSIGN = TASK_PAGE+"/assign";
+    public static final String TASK_ACTION = TASK_PAGE + "/action";
 }

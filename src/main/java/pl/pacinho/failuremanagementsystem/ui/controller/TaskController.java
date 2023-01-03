@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.service.TaskService;
 import pl.pacinho.failuremanagementsystem.service.UserService;
@@ -15,6 +16,8 @@ import pl.pacinho.failuremanagementsystem.ui.model.NewMessage;
 import pl.pacinho.failuremanagementsystem.ui.model.NewTaskDto;
 import pl.pacinho.failuremanagementsystem.ui.model.TaskDto;
 import pl.pacinho.failuremanagementsystem.ui.model.TaskParams;
+import pl.pacinho.failuremanagementsystem.ui.taksaction.model.TaskAction;
+import pl.pacinho.failuremanagementsystem.ui.taksaction.model.TaskStatus;
 import pl.pacinho.failuremanagementsystem.ui.tools.TaskUtils;
 
 @RequiredArgsConstructor
@@ -46,6 +49,7 @@ public class TaskController {
         TaskDto task;
         try {
             task = taskService.findByNumber(number);
+            model.addAttribute("actions", TaskStatus.valueOf(task.getStatus().name()).getActions());
             TaskUtils.checkTask(task, userService.getByLogin(authentication.getName()));
         } catch (Exception ex) {
             model.addAttribute("error", ex.getMessage());
@@ -64,12 +68,13 @@ public class TaskController {
         return "redirect:" + UIConfig.TASK + "/" + number;
     }
 
-    @PostMapping(UIConfig.TASK_ASSIGN)
-    public String assignTask(@PathVariable("number") long number,
+    @PostMapping(UIConfig.TASK_ACTION)
+    public String taskAction(@PathVariable("number") long number,
+                             @RequestParam TaskAction action,
                              Authentication authentication,
                              Model model) {
         try {
-            taskService.assign(number, userService.getByLogin(authentication.getName()));
+            action.goAction(number, userService.getByLogin(authentication.getName()));
         } catch (Exception ex) {
             model.addAttribute("error", ex.getMessage());
             return "task";

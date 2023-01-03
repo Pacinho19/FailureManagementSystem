@@ -1,11 +1,9 @@
 package pl.pacinho.failuremanagementsystem.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pacinho.failuremanagementsystem.exception.TaskNotFoundException;
-import pl.pacinho.failuremanagementsystem.model.entity.TaskMessage;
 import pl.pacinho.failuremanagementsystem.model.enums.Department;
 import pl.pacinho.failuremanagementsystem.model.enums.Status;
 import pl.pacinho.failuremanagementsystem.ui.model.NewMessage;
@@ -26,16 +24,11 @@ public class TaskService {
 
     @Transactional
     public Task save(NewTaskDto newTaskDto, User owner) {
-        return taskRepository.save(
-                TaskDtoMapper.toEntity(newTaskDto, owner)
-        );
+        return taskRepository.save(TaskDtoMapper.toEntity(newTaskDto, owner));
     }
 
     public TaskDto findByNumber(long number) {
-        return TaskDtoMapper.toDto(
-                taskRepository.findById(number)
-                        .orElseThrow(() -> new TaskNotFoundException(number))
-        );
+        return TaskDtoMapper.toDto(taskRepository.findById(number).orElseThrow(() -> new TaskNotFoundException(number)));
     }
 
     public Task getByNumber(long number) {
@@ -49,10 +42,7 @@ public class TaskService {
     }
 
     public List<TaskDto> findByDepartment(Department department) {
-        return taskRepository.findByTargetDepartment(department)
-                .stream()
-                .map(TaskDtoMapper::toDto)
-                .toList();
+        return taskRepository.findByTargetDepartment(department).stream().map(TaskDtoMapper::toDto).toList();
     }
 
     @Transactional
@@ -70,5 +60,21 @@ public class TaskService {
         task.setStatus(Status.IN_PROGRESS);
         task.setExecutor(user);
         task.addMessage(user, "Task in progress...");
+    }
+
+
+    @Transactional
+    public void finish(Long number, User user) {
+        Task task = getByNumber(number);
+        if (task.getTargetDepartment() != user.getDepartment())
+            throw new IllegalStateException("Cannot finish task number " + number + ". No permission for task.");
+
+        if (task.getStatus() != Status.IN_PROGRESS
+            && task.getStatus() != Status.NEW
+            && task.getStatus() != Status.SUSPENDED)
+            throw new IllegalStateException("Cannot finish task number " + number + ". Task status: " + task.getStatus());
+
+        task.setStatus(Status.DONE);
+        task.addMessage(user, "Task done. Please check ...");
     }
 }

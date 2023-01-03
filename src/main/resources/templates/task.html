@@ -38,6 +38,8 @@
 
 
 
+
+
     </style>
 
     <script>
@@ -64,14 +66,14 @@
             document.getElementById("deadlineDaysLeft").innerHTML =  '(Left: ' + Math.ceil(dif / (1000 * 3600 * 24)) + ' days)';
             document.getElementById("deadlineDaysLeft").style.color= dif>0 ? 'green' : 'red';
         }
+    </script>
 
-
-
-
-
-
-
-
+    <script>
+        function action(actionName){
+            let form = document.getElementById("actionForm");
+            document.getElementById("action").value = actionName;
+            form.submit();
+        }
     </script>
 </head>
 
@@ -160,11 +162,15 @@
                                 style="height:100%;margin-left:0">Status
                             </h3>
 
-                            <div class="row" th:if="${task.status.name=='NEW'}" style="margin-left:1%">
-                                <form th:method="post" th:action="${'/falsi/task/' + task.number + '/assign'}">
-                                    <button class="btn btn-warning" type="submit">Assign</button>
-                                </form>
+                            <div class="row" style="margin-left:5%" th:each="action : ${actions}">
+                                <button th:class="${action.buttonClass}" type="button" th:text="${action.name}" th:onclick="return action([[${action.name}]])">
+                                    btn
+                                </button>
                             </div>
+
+                            <form th:action="@{'/falsi/task/' + ${task.number} + '/action'}" method="post" id="actionForm">
+                                <input type="hidden" id="action" name="action">
+                            </form>
                         </div>
                     </div>
                 </div>
