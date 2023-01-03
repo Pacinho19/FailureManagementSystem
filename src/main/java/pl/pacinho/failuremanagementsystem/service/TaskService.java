@@ -13,8 +13,12 @@ import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.repository.TaskRepository;
 import pl.pacinho.failuremanagementsystem.ui.model.NewTaskDto;
 import pl.pacinho.failuremanagementsystem.ui.model.TaskDto;
+import pl.pacinho.failuremanagementsystem.ui.tools.SystemMessages;
+import pl.pacinho.failuremanagementsystem.utils.CollectionsUtils;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -41,15 +45,35 @@ public class TaskService {
         task.addMessage(user, newMessage.getText());
     }
 
-    public List<TaskDto> findByDepartment(Department department) {
-        return taskRepository.findByTargetDepartment(department).stream().map(TaskDtoMapper::toDto).toList();
+    public List<TaskDto> findByDepartmentNotConfirmed(Department department) {
+        return taskRepository.findByTargetDepartmentAndStatusNot(department, Status.CONFIRMED)
+                .stream()
+                .map(TaskDtoMapper::toDto)
+                .toList();
+    }
+
+    public List<TaskDto> findByOwnerNotConfirmed(User user) {
+        return taskRepository.findByOwnerAndStatusNot(user, Status.CONFIRMED)
+                .stream()
+                .map(TaskDtoMapper::toDto)
+                .toList();
+    }
+
+    public List<TaskDto> findByDepartmentOrOwnerNotConfirmed(Department department, User user) {
+        return Stream.of(
+                        findByDepartmentNotConfirmed(department),
+                        findByOwnerNotConfirmed(user)
+                )
+                .flatMap(List::stream)
+                .filter(CollectionsUtils.distinctByKey(TaskDto::getNumber))
+                .toList();
     }
 
     @Transactional
     public void assign(long number, User user) {
         Task task = getByNumber(number);
         if (task.getTargetDepartment() != user.getDepartment())
-            throw new IllegalStateException("Cannot assign task number " + number + ". No permission for task.");
+            throw new IllegalStateException("No permission for change task " + number + " status ");
 
         if (task.getStatus() != Status.NEW)
             throw new IllegalStateException("Cannot assign task number " + number + ". Task status: " + task.getStatus());
@@ -59,22 +83,90 @@ public class TaskService {
 
         task.setStatus(Status.IN_PROGRESS);
         task.setExecutor(user);
-        task.addMessage(user, "Task in progress...");
+        task.addSysMessage(user, SystemMessages.TASK_IN_PROGRESS);
     }
-
 
     @Transactional
     public void finish(Long number, User user) {
         Task task = getByNumber(number);
-        if (task.getTargetDepartment() != user.getDepartment())
-            throw new IllegalStateException("Cannot finish task number " + number + ". No permission for task.");
 
         if (task.getStatus() != Status.IN_PROGRESS
             && task.getStatus() != Status.NEW
             && task.getStatus() != Status.SUSPENDED)
             throw new IllegalStateException("Cannot finish task number " + number + ". Task status: " + task.getStatus());
 
-        task.setStatus(Status.DONE);
-        task.addMessage(user, "Task done. Please check ...");
+        if (task.getExecutor() == null && task.getExecutor().getDepartment() == user.getDepartment()
+            || task.getExecutor() != null && task.getExecutor().getId() == user.getId()
+            || task.getOwner().getId() == user.getId()) {
+
+            task.setStatus(Status.DONE);
+            task.addSysMessage(user, SystemMessages.TASK_DONE);
+
+        } else
+            throw new IllegalStateException("No permission for change task " + number + " status ");
+
+    }
+
+    @Transactional
+    public void confirm(Long number, User user) {
+        Task task = getByNumber(number);
+        if (!Objects.equals(task.getOwner().getId(), user.getId()))
+            throw new IllegalStateException("No permission for change task " + number + " status ");
+
+        if (task.getStatus() != Status.DONE)
+            throw new IllegalStateException("Cannot confirm task number " + number + ". Task status: " + task.getStatus());
+
+        task.setStatus(Status.CONFIRMED);
+        task.addSysMessage(user, SystemMessages.TASK_CONFIRMED);
+    }
+
+    @Transactional
+    public void decline(Long number, User user) {
+        Task task = getByNumber(number);
+        if (!Objects.equals(task.getOwner().getId(), user.getId()))
+            throw new IllegalStateException("No permission for change task " + number + " status ");
+
+        if (task.getStatus() != Status.DONE)
+            throw new IllegalStateException("Cannot decline task number " + number + ". Task status: " + task.getStatus());
+
+        task.setStatus(Status.IN_PROGRESS);
+        task.addSysMessage(user, SystemMessages.TASK_DECLINED);
+    }
+
+    @Transactional
+    public void suspend(Long number, User user) {
+        Task task = getByNumber(number);
+
+        if (task.getStatus() != Status.IN_PROGRESS
+            && task.getStatus() != Status.NEW)
+            throw new IllegalStateException("Cannot suspended task number " + number + ". Task status: " + task.getStatus());
+
+        if (task.getExecutor() == null && task.getExecutor().getDepartment() == user.getDepartment()
+            || task.getExecutor() != null && task.getExecutor().getId() == user.getId()
+            || task.getOwner().getId() == user.getId()) {
+
+
+            task.setStatus(Status.SUSPENDED);
+            task.addSysMessage(user, SystemMessages.TASK_SUSPENDED);
+        } else
+            throw new IllegalStateException("No permission for change task " + number + " status ");
+
+    }
+
+    @Transactional
+    public void resume(Long number, User user) {
+        Task task = getByNumber(number);
+        if (task.getStatus() != Status.SUSPENDED)
+            throw new IllegalStateException("Cannot resume task number " + number + ". Task status: " + task.getStatus());
+
+        if (task.getExecutor() == null && task.getExecutor().getDepartment() == user.getDepartment()
+            || task.getExecutor() != null && task.getExecutor().getId() == user.getId()
+            || task.getOwner().getId() == user.getId()) {
+
+            task.setStatus(task.getExecutor() != null ? Status.IN_PROGRESS : Status.NEW);
+            task.addSysMessage(user, SystemMessages.TASK_RESUMED);
+        } else
+            throw new IllegalStateException("No permission for change task " + number + " status ");
+
     }
 }

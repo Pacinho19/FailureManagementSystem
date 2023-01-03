@@ -80,10 +80,18 @@ public class Task {
         addMessage(owner, message);
     }
 
-    public void addMessage(User owner, String message) {
+    private void addMessage(User user, String message, MessageType messageType) {
         this.messages.add(
-                new TaskMessage(message, owner, this)
+                new TaskMessage(message, user, this, messageType)
         );
+    }
+
+    public void addMessage(User user, String message) {
+        addMessage(user, message, MessageType.USER);
+    }
+
+    public void addSysMessage(User user, String message) {
+        addMessage(user, message, MessageType.SYS);
     }
 
     public void addAttachment(String path) {
@@ -91,5 +99,6 @@ public class Task {
                 new Attachment(path, this.number)
         );
     }
+
 
 }

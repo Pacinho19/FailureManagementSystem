@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
+import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.service.TaskService;
 import pl.pacinho.failuremanagementsystem.service.UserService;
 import pl.pacinho.failuremanagementsystem.ui.config.UIConfig;
@@ -48,9 +49,10 @@ public class TaskController {
 
         TaskDto task;
         try {
+            User user = userService.getByLogin(authentication.getName());
             task = taskService.findByNumber(number);
-            model.addAttribute("actions", TaskStatus.valueOf(task.getStatus().name()).getActions());
-            TaskUtils.checkTask(task, userService.getByLogin(authentication.getName()));
+            TaskUtils.checkTask(task, user);
+            model.addAttribute("actions", TaskUtils.filterActions(TaskStatus.valueOf(task.getStatus().name()).getActions(), task, user));
         } catch (Exception ex) {
             model.addAttribute("error", ex.getMessage());
             return "task";

@@ -9,8 +9,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum TaskStatus {
 
-    NEW(List.of(TaskAction.ASSIGN, TaskAction.HOLD, TaskAction.FINISH)),
-    IN_PROGRESS(List.of(TaskAction.HOLD, TaskAction.FINISH)),
+    NEW(List.of(TaskAction.ASSIGN, TaskAction.SUSPEND, TaskAction.FINISH)),
+    IN_PROGRESS(List.of(TaskAction.SUSPEND, TaskAction.FINISH)),
     SUSPENDED(List.of(TaskAction.RESUME, TaskAction.FINISH)),
     DONE(List.of(TaskAction.CONFIRM, TaskAction.DECLINE)),
     CONFIRMED(Collections.emptyList());

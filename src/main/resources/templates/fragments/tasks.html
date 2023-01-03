@@ -3,7 +3,7 @@
     <table class="table table-striped">
         <thead>
         <tr style="background-color:lightgray;">
-            <th colspan="8" style="text-align:left;color:white" th:text="${title}">aqaa</th>
+            <th colspan="8" style="text-align:left;color:black" th:text="${title}">aqaa</th>
         </tr>
         <tr>
             <th>ID</th>
@@ -18,8 +18,10 @@
         </thead>
         <tbody th:if="${tasks!=null}">
         <tr th:each="task:${tasks}">
-            <td>
-                <a th:href="${'/falsi/task/' + task.number}" th:text="${task.number}"></a>
+            <td th:style="'text-align:center;background-color:' + ${task.status.color}">
+                <a th:href="${'/falsi/task/' + task.number}" >
+                    <h3 th:text="${task.number}" style="color: black"></h3>
+                </a>
             </td>
             <td th:text="${task.owner.firstName + ' ' + task.owner.lastName}"></td>
             <td th:text="${#temporals.format(task.creationDate, 'dd-MM-yyyy')}"></td>
@@ -28,7 +30,8 @@
             <td th:text="${task.title}"></td>
             <td th:if="${task.executor!=null}" th:text="${task.executor.firstName + ' ' + task.executor.lastName}"></td>
             <td th:if="${task.executor==null}">-</td>
-            <td th:text="${task.getDeadlineDays()}" th:style="${task.getDeadlineDays() < 0 ? 'color:red;font-weight: bold;' : ''}"></td>
+            <td th:if="${task.status.name!='CONFIRMED'}"th:text="${task.getDeadlineDays()}" th:style="${task.getDeadlineDays() < 0 ? 'color:red;font-weight: bold;' : ''}"></td>
+            <td th:if="${task.status.name=='CONFIRMED'}">-</td>
         </tr>
         </tbody>
     </table>

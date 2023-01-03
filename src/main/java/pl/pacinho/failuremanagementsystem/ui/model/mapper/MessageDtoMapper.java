@@ -16,7 +16,8 @@ public class MessageDtoMapper {
     private static MessageDto toDto(TaskMessage taskMessage) {
         return new MessageDto(taskMessage.getUser().getFirstName() + " " + taskMessage.getUser().getLastName(),
                 taskMessage.getCreationDate(),
-                taskMessage.getText()
+                taskMessage.getText(),
+                taskMessage.getType()
         );
     }
 }

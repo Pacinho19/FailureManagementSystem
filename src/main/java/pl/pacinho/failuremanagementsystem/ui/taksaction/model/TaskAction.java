@@ -13,11 +13,11 @@ import java.util.function.BiConsumer;
 public enum TaskAction {
 
     ASSIGN("btn btn-warning", TaskActionService.getInstance().ASSIGN),
-    HOLD("btn btn-light", null),
-    RESUME("btn btn-secondary", null),
+    SUSPEND("btn btn-light", TaskActionService.getInstance().SUSPEND),
+    RESUME("btn btn-secondary", TaskActionService.getInstance().RESUME),
     FINISH("btn btn-primary",  TaskActionService.getInstance().FINISH),
-    CONFIRM("btn btn-success", null),
-    DECLINE("btn btn-danger", null);
+    CONFIRM("btn btn-success", TaskActionService.getInstance().CONFIRM),
+    DECLINE("btn btn-danger",  TaskActionService.getInstance().DECLINE);
 
     @Getter
     private String buttonClass;

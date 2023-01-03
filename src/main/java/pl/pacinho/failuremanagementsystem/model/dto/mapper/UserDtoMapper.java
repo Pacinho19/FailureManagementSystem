@@ -9,7 +9,7 @@ import pl.pacinho.failuremanagementsystem.model.enums.Role;
 public class UserDtoMapper {
 
     public static User parseToEntity(FmsUserDto fmsUserDto) {
-        return new User(fmsUserDto.firstName(), fmsUserDto.lastName(), fmsUserDto.username(), fmsUserDto.password(), 1, Role.ROLE_USER, Department.BINT);
+        return new User(fmsUserDto.firstName(), fmsUserDto.lastName(), fmsUserDto.username(), fmsUserDto.password(), 1, Role.ROLE_USER, fmsUserDto.department());
     }
 
     public static UserDto parseToDto(User user) {

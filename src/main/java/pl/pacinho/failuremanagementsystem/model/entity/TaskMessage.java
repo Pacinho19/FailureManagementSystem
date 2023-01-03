@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import pl.pacinho.failuremanagementsystem.model.enums.MessageType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -31,10 +32,13 @@ public class TaskMessage {
 
     private LocalDateTime creationDate;
 
-    public TaskMessage(String text, User user, Task task) {
+    @Enumerated(EnumType.STRING)
+    private MessageType type;
+    public TaskMessage(String text, User user, Task task, MessageType type) {
         this.text = text;
         this.user = user;
         this.task = task;
+        this.type = type;
         this.creationDate = LocalDateTime.now();
     }
 }

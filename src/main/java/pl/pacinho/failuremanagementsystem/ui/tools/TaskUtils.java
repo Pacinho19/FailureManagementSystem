@@ -4,7 +4,10 @@ import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.model.enums.Status;
 import pl.pacinho.failuremanagementsystem.model.enums.TaskKind;
 import pl.pacinho.failuremanagementsystem.ui.model.TaskDto;
+import pl.pacinho.failuremanagementsystem.ui.taksaction.model.TaskAction;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -21,7 +24,9 @@ public class TaskUtils {
                                                               || t.getStatus() == Status.SUSPENDED
                                                               || (t.getStatus() == Status.IN_PROGRESS && t.getExecutor().getId() != user.getId())))),
                 Map.entry(TaskKind.DONE,
-                        filterTasks(tasks, (TaskDto t) -> t.getStatus() == Status.DONE))
+                        filterTasks(tasks, (TaskDto t) -> t.getStatus() == Status.DONE && t.getTargetDepartment()==user.getDepartment())),
+                Map.entry(TaskKind.REQUESTED,
+                        filterTasks(tasks, (TaskDto t) -> t.getOwner().getId() == user.getId() && t.getStatus()!=Status.CONFIRMED))
         );
     }
 
@@ -32,7 +37,27 @@ public class TaskUtils {
     }
 
     public static void checkTask(TaskDto task, User user) {
-        if (task.getTargetDepartment() != user.getDepartment())
+        if (task.getTargetDepartment() != user.getDepartment()
+            && user.getDepartment() != task.getOwner().getDepartment())
             throw new IllegalStateException("No permission for open task number " + task.getNumber());
+    }
+
+    public static List<TaskAction> filterActions(List<TaskAction> actions, TaskDto task, User user) {
+        if (user.getDepartment() != task.getTargetDepartment() && user.getId() != task.getOwner().getId())
+            return Collections.emptyList();
+
+        if (task.getExecutor() != null && task.getExecutor().getId() != user.getId() && user.getId() != task.getOwner().getId())
+            return Collections.emptyList();
+
+        if (task.getStatus() == Status.DONE && user.getId() != task.getOwner().getId())
+            return Collections.emptyList();
+
+        if (task.getStatus() == Status.NEW && task.getTargetDepartment() != user.getDepartment()) {
+            ArrayList<TaskAction> actions2 = new ArrayList<>(actions);
+            actions2.remove(TaskAction.ASSIGN);
+            return actions2;
+        }
+
+        return actions;
     }
 }

@@ -25,7 +25,10 @@ public class Initializer {
         if (userService.getUsersCount() > 0) return;
 
         List.of(
-                new FmsUserDto("Patryk", "O", "po", "1", Department.BINT)
+                new FmsUserDto("Patryk", "O", "po", "1", Department.BINT),
+                new FmsUserDto("Janusz", "Nosacz", "jn", "1", Department.BINT),
+                new FmsUserDto("Marian", "Paździoch", "mp", "1", Department.DWWM),
+                new FmsUserDto("Grazyna", "Nosacz", "gn", "1", Department.DWWM)
         ).forEach(userService::save);
     }
 

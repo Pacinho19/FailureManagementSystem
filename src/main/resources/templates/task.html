@@ -31,19 +31,13 @@
             scale: 2.5;
             margin-left: 1%;
         }
-
-
-
-
-
-
-
-
-
     </style>
 
     <script>
         function init() {
+            let status = document.getElementById("status").innerHTML;
+            if(status=='CONFIRMED') return;
+
             let deadlineDate = document.getElementById("deadlineDate");
             deadlineDate.min = getTomorrow();
             deadlineDate.value = deadlineDate.min;
@@ -66,6 +60,7 @@
             document.getElementById("deadlineDaysLeft").innerHTML =  '(Left: ' + Math.ceil(dif / (1000 * 3600 * 24)) + ' days)';
             document.getElementById("deadlineDaysLeft").style.color= dif>0 ? 'green' : 'red';
         }
+
     </script>
 
     <script>
@@ -74,6 +69,7 @@
             document.getElementById("action").value = actionName;
             form.submit();
         }
+
     </script>
 </head>
 
@@ -91,7 +87,7 @@
         </div>
 
         <div class="card" style="margin-top:2%" th:if="${task!=null}">
-            <div class="card-header">
+            <div class="card-header" th:style="'background-color:' + ${task.status.color}">
                 <div class="row">
                     <h3>Task number: <span th:text="${task.number}"></span></h3>
                 </div>
@@ -163,12 +159,14 @@
                             </h3>
 
                             <div class="row" style="margin-left:5%" th:each="action : ${actions}">
-                                <button th:class="${action.buttonClass}" type="button" th:text="${action.name}" th:onclick="return action([[${action.name}]])">
+                                <button th:class="${action.buttonClass}" type="button" th:text="${action.name}"
+                                        th:onclick="return action([[${action.name}]])">
                                     btn
                                 </button>
                             </div>
 
-                            <form th:action="@{'/falsi/task/' + ${task.number} + '/action'}" method="post" id="actionForm">
+                            <form th:action="@{'/falsi/task/' + ${task.number} + '/action'}" method="post"
+                                  id="actionForm">
                                 <input type="hidden" id="action" name="action">
                             </form>
                         </div>
@@ -177,7 +175,8 @@
 
             </div>
 
-            <form th:action="@{'/falsi/task/' + ${task.number} + '/message'}" th:object="${message}" method="post">
+            <form th:action="@{'/falsi/task/' + ${task.number} + '/message'}" th:object="${message}" method="post"
+                  th:if="${task.status.name=='NEW' || task.status.name=='IN_PROGRESS'}">
                 <div class="form-group row">
                     <div class="col-md-12" style="text-align:center">
                             <textarea required id="description" th:field="*{text}" rows="5" cols="2"
@@ -204,7 +203,7 @@
                         </div>
                     </div>
                     <div style="text-align:left" class="mt-2">
-                        <p style="text-align:left;font-size:25px;white-space: pre-line;" class="comment-text"
+                        <p th:style="'text-align:left;font-size:25px;white-space: pre-line;' + ${comment.type.name=='SYS' ? 'font-weight: bold;color:#208494 ' : ''}" class="comment-text"
                            th:text="${comment.message}"></p>
                     </div>
                 </div>

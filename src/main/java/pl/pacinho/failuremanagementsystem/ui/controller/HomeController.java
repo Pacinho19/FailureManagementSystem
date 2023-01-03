@@ -42,13 +42,14 @@ public class HomeController {
         model.addAttribute("user", UserDtoMapper.parseToDto(user));
 
         Map<TaskKind, List<TaskDto>> tasksKinds = TaskUtils.groupByKind(
-                taskService.findByDepartment(user.getDepartment()),
+                taskService.findByDepartmentOrOwnerNotConfirmed(user.getDepartment(), user),
                 user
         );
 
         model.addAttribute("myTasks", tasksKinds.get(TaskKind.OWN));
         model.addAttribute("departmentTasks", tasksKinds.get(TaskKind.DEP));
         model.addAttribute("doneTasks", tasksKinds.get(TaskKind.DONE));
+        model.addAttribute("requestedTasks", tasksKinds.get(TaskKind.REQUESTED));
 
         return "home";
     }

@@ -24,6 +24,8 @@
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-10">
+        <div th:replace="fragments/tasks :: tasks(tasks=${requestedTasks}, title=${'Tasks requested by ' + user.firstName + ' ' + user.lastName})"/>
+
         <div th:replace="fragments/tasks :: tasks(tasks=${myTasks}, title=${'Tasks assigned to ' + user.firstName + ' ' + user.lastName})"/>
 
         <div th:replace="fragments/tasks :: tasks(tasks=${departmentTasks}, title=${'Tasks for ' + user.department})"/>
