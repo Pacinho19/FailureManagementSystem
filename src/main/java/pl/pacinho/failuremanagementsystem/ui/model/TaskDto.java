@@ -4,6 +4,7 @@ import lombok.Getter;
 import pl.pacinho.failuremanagementsystem.model.dto.UserDto;
 import pl.pacinho.failuremanagementsystem.model.dto.mapper.UserDtoMapper;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
+import pl.pacinho.failuremanagementsystem.ui.model.mapper.AttachmentDtoMapper;
 import pl.pacinho.failuremanagementsystem.ui.model.mapper.MessageDtoMapper;
 
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ public class TaskDto extends TaskModel {
     private UserDto executor;
     private LocalDateTime creationDate;
     private List<MessageDto> messages;
+    private List<AttachmentDto> attachments;
 
     public TaskDto(Task task) {
         this.setTitle(task.getTitle());
@@ -40,6 +42,7 @@ public class TaskDto extends TaskModel {
         this.creationDate = task.getCreationDate();
         this.messages = MessageDtoMapper.parseList(task.getMessages());
         this.messages.sort(Collections.reverseOrder(Comparator.comparing(MessageDto::dateTime)));
+        this.attachments= AttachmentDtoMapper.parseList(task.getAttachments());
     }
 
     public long getDeadlineDays() {

@@ -94,11 +94,10 @@ public class Task {
         addMessage(user, message, MessageType.SYS);
     }
 
-    public void addAttachment(String path) {
+    public void addAttachment(String path, String originalName, User user, AttachmentSource source) {
         attachments.add(
-                new Attachment(path, this.number)
+                new Attachment(path, originalName, this, user, source)
         );
     }
-
 
 }

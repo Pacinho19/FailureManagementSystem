@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import pl.pacinho.failuremanagementsystem.model.dto.mapper.UserDtoMapper;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
+import pl.pacinho.failuremanagementsystem.model.enums.AttachmentSource;
 import pl.pacinho.failuremanagementsystem.service.TaskService;
 import pl.pacinho.failuremanagementsystem.service.UserService;
 import pl.pacinho.failuremanagementsystem.ui.config.UIConfig;
@@ -47,9 +50,9 @@ public class TaskController {
                            Model model,
                            Authentication authentication) {
 
+        User user = userService.getByLogin(authentication.getName());
         TaskDto task;
         try {
-            User user = userService.getByLogin(authentication.getName());
             task = taskService.findByNumber(number);
             TaskUtils.checkTask(task, user);
             model.addAttribute("actions", TaskUtils.filterActions(TaskStatus.valueOf(task.getStatus().name()).getActions(), task, user));
@@ -57,6 +60,7 @@ public class TaskController {
             model.addAttribute("error", ex.getMessage());
             return "task";
         }
+        model.addAttribute("user", UserDtoMapper.parseToDto(user));
         model.addAttribute("task", task);
         model.addAttribute("message", new NewMessage());
         return "task";
@@ -79,8 +83,32 @@ public class TaskController {
             action.goAction(number, userService.getByLogin(authentication.getName()));
         } catch (Exception ex) {
             model.addAttribute("error", ex.getMessage());
-            return "task";
+            return taskPage(number, model, authentication);
         }
+        return "redirect:" + UIConfig.TASK + "/" + number;
+    }
+
+    @PostMapping(UIConfig.TASK_ADD_ATTACHMENT)
+    public String addAttachment(@PathVariable("number") long number,
+                                @RequestParam("file") MultipartFile file,
+                                @RequestParam("source") AttachmentSource source,
+                                Authentication authentication,
+                                Model model) {
+        try {
+            taskService.addAttachment(number, file, userService.getByLogin(authentication.getName()), source);
+        } catch (Exception ex) {
+            model.addAttribute("error", ex.getMessage());
+            return taskPage(number, model, authentication);
+        }
+
+        return "redirect:" + UIConfig.TASK + "/" + number;
+    }
+
+    @PostMapping(UIConfig.TASK_BIND_TASK)
+    public String bindTask(@PathVariable("number") long number,
+                           @RequestParam Long taskNumber,
+                           Authentication authentication,
+                           Model model) {
         return "redirect:" + UIConfig.TASK + "/" + number;
     }
 }

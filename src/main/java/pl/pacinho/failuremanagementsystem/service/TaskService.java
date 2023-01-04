@@ -3,7 +3,9 @@ package pl.pacinho.failuremanagementsystem.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import pl.pacinho.failuremanagementsystem.exception.TaskNotFoundException;
+import pl.pacinho.failuremanagementsystem.model.enums.AttachmentSource;
 import pl.pacinho.failuremanagementsystem.model.enums.Department;
 import pl.pacinho.failuremanagementsystem.model.enums.Status;
 import pl.pacinho.failuremanagementsystem.ui.model.NewMessage;
@@ -14,6 +16,7 @@ import pl.pacinho.failuremanagementsystem.repository.TaskRepository;
 import pl.pacinho.failuremanagementsystem.ui.model.NewTaskDto;
 import pl.pacinho.failuremanagementsystem.ui.model.TaskDto;
 import pl.pacinho.failuremanagementsystem.ui.tools.SystemMessages;
+import pl.pacinho.failuremanagementsystem.utils.AttachmentUtils;
 import pl.pacinho.failuremanagementsystem.utils.CollectionsUtils;
 
 import java.util.List;
@@ -168,5 +171,16 @@ public class TaskService {
         } else
             throw new IllegalStateException("No permission for change task " + number + " status ");
 
+    }
+
+    @Transactional
+    public void addAttachment(long number, MultipartFile file, User user, AttachmentSource source) {
+        Task task = getByNumber(number);
+        if (task.getStatus() != Status.NEW
+            && task.getStatus() != Status.IN_PROGRESS)
+            throw new IllegalStateException("Cannot add attachment. Task status: " + task.getStatus());
+
+        String outPath = AttachmentUtils.save(number, file);
+        task.addAttachment(outPath, file.getOriginalFilename(), user, source);
     }
 }

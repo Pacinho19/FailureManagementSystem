@@ -17,4 +17,8 @@ public class UserDto {
     private String lastName;
     private Department department;
 
+    public String getName(){
+        return firstName + " " + lastName;
+    }
+
 }
