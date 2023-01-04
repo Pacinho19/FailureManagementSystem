@@ -1,18 +1,19 @@
 package pl.pacinho.failuremanagementsystem.ui.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FileUtils;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.pacinho.failuremanagementsystem.model.dto.mapper.UserDtoMapper;
+import pl.pacinho.failuremanagementsystem.model.entity.Attachment;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.model.enums.AttachmentSource;
+import pl.pacinho.failuremanagementsystem.service.AttachmentService;
 import pl.pacinho.failuremanagementsystem.service.TaskService;
 import pl.pacinho.failuremanagementsystem.service.UserService;
 import pl.pacinho.failuremanagementsystem.ui.config.UIConfig;
@@ -24,12 +25,18 @@ import pl.pacinho.failuremanagementsystem.ui.taksaction.model.TaskAction;
 import pl.pacinho.failuremanagementsystem.ui.taksaction.model.TaskStatus;
 import pl.pacinho.failuremanagementsystem.ui.tools.TaskUtils;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.nio.file.Paths;
+
 @RequiredArgsConstructor
 @Controller
 public class TaskController {
 
     private final TaskService taskService;
     private final UserService userService;
+    private final AttachmentService attachmentService;
 
     @GetMapping(UIConfig.NEW_TASK)
     public String newTask(Model model) {
@@ -102,6 +109,23 @@ public class TaskController {
         }
 
         return "redirect:" + UIConfig.TASK + "/" + number;
+    }
+
+    @PostMapping(UIConfig.ATTACHMENT_DOWNLOAD)
+    public void addAttachment(@PathVariable("id") long id,
+                                HttpServletResponse response) {
+        try {
+            File attachment = attachmentService.getAttachment(id);
+            response.setContentType("application/octet-stream");
+            String headerKey = "Content-Disposition";
+            String headerValue = "attachment; filename = " + attachment.getName();
+            response.setHeader(headerKey, headerValue);
+            ServletOutputStream outputStream = response.getOutputStream();
+            outputStream.write(FileUtils.readFileToByteArray(attachment));
+            outputStream.close();
+        } catch (Exception ex) {
+            //TODO
+        }
     }
 
     @PostMapping(UIConfig.TASK_BIND_TASK)

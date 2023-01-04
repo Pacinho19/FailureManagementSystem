@@ -46,6 +46,7 @@ public class AttachmentUtils {
     }
 
     private static String getNewName(String name) {
-        return SlugifyUtils.slugify(name);
+        return SlugifyUtils.slugify(FilenameUtils.getBaseName(name))
+                +"." + FilenameUtils.getExtension(name);
     }
 }
