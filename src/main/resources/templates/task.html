@@ -33,6 +33,16 @@
             margin-left: 1%;
         }
 
+        .quote {
+          margin: 0;
+          background: #eee;
+          padding: 1em;
+          border-radius: 1em;
+        }
+
+        .quote blockquote {
+          margin: 1em;
+        }
     </style>
 
     <script>
@@ -62,7 +72,6 @@
             document.getElementById("deadlineDaysLeft").innerHTML = '(Left: ' + Math.ceil(dif / (1000 * 3600 * 24)) + ' days)';
             document.getElementById("deadlineDaysLeft").style.color = dif > 0 ? 'green' : 'red';
         }
-
     </script>
 
     <script>
@@ -71,7 +80,22 @@
             document.getElementById("action").value = actionName;
             form.submit();
         }
+    </script>
 
+    <script>
+        function quote(messageId, messageText) {
+            document.getElementById("parentMessageQuote").value=messageId;
+            document.getElementById("quoteMessage").innerHTML=messageText;
+            document.getElementById("quote").style.display="block";
+        }
+    </script>
+
+    <script>
+        function clearQuote(){
+            document.getElementById("parentMessageQuote").value=null;
+            document.getElementById("quoteMessage").innerHTML=null;
+            document.getElementById("quote").style.display="none";
+        }
     </script>
 
 </head>
@@ -390,7 +414,7 @@
                                         </span>
                                     <div class="input-group-append">
                                             <span class="form-control"
-                                               th:text="${relatedTask.status}">
+                                                  th:text="${relatedTask.status}">
                                                 Status
                                             </span>
                                     </div>
@@ -416,12 +440,33 @@
 
             </div>
 
+            <div class="form-group row">
+                <div class="col-md-12" style="text-align:center;display:none" id="quote">
+                    <div style="width:90%;;margin-left:auto;margin-right:auto;">
+                        <div class="row">
+                            <div class="col-md-6" style="text-align:left">
+                                <p style="text-align:left">Quoted message</p>
+                            </div>
+                            <div class="col-md-6" style="text-align:right">
+                                <button type="button" class="btn btn-danger" onclick="clearQuote()">Clear</button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <figure class="quote" style="width:90%;margin-left:auto;margin-right:auto">
+                        <blockquote id="quoteMessage" style="text-align:left;white-space: pre-line;">
+                        </blockquote>
+                    </figure>
+                </div>
+            </div>
+
             <form th:action="@{'/falsi/task/' + ${task.number} + '/message'}" th:object="${message}" method="post"
                   th:if="${task.status.name=='NEW' || task.status.name=='IN_PROGRESS'}">
                 <div class="form-group row">
                     <div class="col-md-12" style="text-align:center">
-                            <textarea required id="description" th:field="*{text}" rows="5" cols="2"
-                                      style="width:90%;margin-left:auto;margin-right:auto"></textarea>
+                        <input type="hidden" name="parent" id="parentMessageQuote">
+                        <textarea required id="description" th:field="*{text}" rows="5" cols="2"
+                                  style="width:90%;margin-left:auto;margin-right:auto"></textarea>
                         <button class="btn btn-primary" type="submit"
                                 style="width:90%;margin-left:auto;margin-right:auto">
                             Send
@@ -435,14 +480,34 @@
                 <div class="bg-white p-2">
                     <div class="d-flex flex-row user-info">
                         <div class="d-flex flex-column justify-content-start ml-2" style="margin-top:1%">
-                                <span th:style="${'text-align:left;font-size:20px;color:'+comment.color}" class="d-block font-weight-bold name"
+                                <span th:style="${'text-align:left;font-size:20px;color:'+comment.color}"
+                                      class="d-block font-weight-bold name"
                                       th:text="${'---   ' + comment.userName + '    [' + #temporals.format(comment.dateTime, 'dd-MM-yyyy HH:mm') +']'}">
                                 </span>
                         </div>
                     </div>
-                    <div style="text-align:left" class="mt-2">
+
+                    <div class="form-group row" th:if="${comment.parent!=null}" style=";margin-top:1%">
+                        <div class="col-md-12" style="text-align:center">
+                            <figure class="quote" style="margin-left:auto;margin-right:auto">
+                                <p style="text-align:left"
+                                   th:text="${'---   ' + comment.parent.userName + '    [' + #temporals.format(comment.parent.dateTime, 'dd-MM-yyyy HH:mm') +']'}"></p>
+                                <blockquote style="text-align:left;white-space: pre-line;"
+                                            th:text="${comment.parent.message}">
+                                </blockquote>
+                            </figure>
+                        </div>
+                    </div>
+
+                    <div style="text-align:left;margin-top:1%" class="mt-2">
                         <p th:style="${'text-align:left;font-size:20px;white-space: pre-line;color:'+comment.color + (comment.type.name=='SYS' ? ';font-weight: bold;' : '')}"
                            class="comment-text" th:text="${comment.message}"></p>
+                    </div>
+                    <div style="text-align:right;margin-top:1%" class="mt-2"
+                         th:if="${(task.status.name=='NEW' || task.status.name=='IN_PROGRESS') && comment.type.name!='SYS'}">
+                        <button class="btn btn-info" type="button"
+                                th:onclick="return quote([[${comment.id}]], [[${comment.message}]])">Quote
+                        </button>
                     </div>
                 </div>
                 <hr>
@@ -476,6 +541,11 @@
                 $(this).next('.custom-file-label').html(filename);
             }
         })
+
+
+
+
+
 
 
 </script>

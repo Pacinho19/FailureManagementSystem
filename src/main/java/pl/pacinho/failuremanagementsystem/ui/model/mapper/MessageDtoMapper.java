@@ -15,12 +15,14 @@ public class MessageDtoMapper {
     }
 
     private static MessageDto toDto(TaskMessage taskMessage) {
-        return new MessageDto(taskMessage.getUser().getFirstName() + " " + taskMessage.getUser().getLastName(),
+        return new MessageDto(
+                taskMessage.getId(),
+                taskMessage.getUser().getFirstName() + " " + taskMessage.getUser().getLastName(),
                 taskMessage.getCreationDate(),
                 taskMessage.getText(),
                 taskMessage.getType(),
-                MessageUtils.getColor(taskMessage, taskMessage.getTask())
-
+                MessageUtils.getColor(taskMessage, taskMessage.getTask()),
+                taskMessage.getParent()!=null ? toDto(taskMessage.getParent()) : null
         );
     }
 }

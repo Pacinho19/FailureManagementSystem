@@ -34,11 +34,17 @@ public class TaskMessage {
 
     @Enumerated(EnumType.STRING)
     private MessageType type;
-    public TaskMessage(String text, User user, Task task, MessageType type) {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PARENT_MESSAGE_ID")
+    private TaskMessage parent;
+
+    public TaskMessage(String text, User user, Task task, MessageType type, TaskMessage parent) {
         this.text = text;
         this.user = user;
         this.task = task;
         this.type = type;
+        this.parent = parent;
         this.creationDate = LocalDateTime.now();
     }
 }

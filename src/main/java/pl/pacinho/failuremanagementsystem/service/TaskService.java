@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import pl.pacinho.failuremanagementsystem.exception.TaskNotFoundException;
+import pl.pacinho.failuremanagementsystem.model.entity.TaskMessage;
 import pl.pacinho.failuremanagementsystem.model.enums.AttachmentSource;
 import pl.pacinho.failuremanagementsystem.model.enums.Department;
 import pl.pacinho.failuremanagementsystem.model.enums.Status;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskMessageService taskMessageService;
 
     @Transactional
     public Task save(NewTaskDto newTaskDto, User owner) {
@@ -44,9 +46,14 @@ public class TaskService {
     }
 
     @Transactional
-    public void addMessage(long number, NewMessage newMessage, User user) {
+    public void addMessage(long number, NewMessage newMessage, User user, Long parentMessage) {
         Task task = getByNumber(number);
-        task.addMessage(user, newMessage.getText());
+
+        TaskMessage taskMessage = parentMessage != null
+                ? taskMessageService.findById(parentMessage)
+                : null;
+
+        task.addMessage(user, newMessage.getText(), taskMessage);
     }
 
     public List<TaskDto> findByDepartmentNotConfirmed(Department department) {

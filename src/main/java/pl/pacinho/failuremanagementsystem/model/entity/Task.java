@@ -83,21 +83,21 @@ public class Task {
         this.messages = new ArrayList<>();
         this.relatedTasks = new HashSet<>();
         this.status = Status.NEW;
-        addMessage(owner, message);
+        addMessage(owner, message, null);
     }
 
-    private void addMessage(User user, String message, MessageType messageType) {
+    private void addMessage(User user, String message, MessageType messageType, TaskMessage parent) {
         this.messages.add(
-                new TaskMessage(message, user, this, messageType)
+                new TaskMessage(message, user, this, messageType, parent)
         );
     }
 
-    public void addMessage(User user, String message) {
-        addMessage(user, message, MessageType.USER);
+    public void addMessage(User user, String message, TaskMessage parent) {
+        addMessage(user, message, MessageType.USER, parent);
     }
 
     public void addSysMessage(User user, String message) {
-        addMessage(user, message, MessageType.SYS);
+        addMessage(user, message, MessageType.SYS, null);
     }
 
     public void addAttachment(String path, String originalName, User user, AttachmentSource source) {

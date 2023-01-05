@@ -75,9 +75,10 @@ public class TaskController {
 
     @PostMapping(UIConfig.TASK_SEND_MESSAGE)
     public String sendMessage(@PathVariable("number") long number,
+                              @RequestParam(value = "parent", required = false) Long parent,
                               Authentication authentication,
                               NewMessage newMessage) {
-        taskService.addMessage(number, newMessage, userService.getByLogin(authentication.getName()));
+        taskService.addMessage(number, newMessage, userService.getByLogin(authentication.getName()), parent);
         return "redirect:" + UIConfig.TASK + "/" + number;
     }
 
