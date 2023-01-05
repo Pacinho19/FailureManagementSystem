@@ -10,5 +10,7 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    List<Notification> findAllByUserAndReadDateIsNull(User user);
+    List<Notification> findAllByUserAndReadDateIsNullOrderByIdDesc(User user);
+
+    List<Notification> findAllByUserUsernameEqualsAndReadDateIsNull(String name);
 }

@@ -1,8 +1,8 @@
 <div th:fragment="notifications">
     <div  th:each="notification: ${notifications}" class="row">
         <div class="col-md-8">
-            <form method="POST" th:action="@{/falsi/notification}" th:method="post">
-                <input hidden name="notificationId" th:value="*{notification.id}">
+            <form method="POST" th:action="@{'/falsi/notification/' + ${notification.id} + '/read'}" th:method="post">
+                <input type="hidden" name="taskNumber" th:value="${notification.task.number}">
                 <button style="width:100%;font-size:15px;" type="submit" name="submit" value="value" class="btn btn-primary btn-lg active">
                     <a th:text="${notification.text}">Text</a>
                 </button>

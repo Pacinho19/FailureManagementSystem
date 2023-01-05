@@ -3,13 +3,17 @@ package pl.pacinho.failuremanagementsystem.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.pacinho.failuremanagementsystem.exception.NotificationNotFoundException;
 import pl.pacinho.failuremanagementsystem.model.entity.Notification;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.repository.NotificationRepository;
+import pl.pacinho.failuremanagementsystem.ui.model.enums.NotificationMessage;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +22,14 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     public List<Notification> findUnreadByUser(User user) {
-        return notificationRepository.findAllByUserAndReadDateIsNull(user);
+        return notificationRepository.findAllByUserAndReadDateIsNullOrderByIdDesc(user);
     }
 
     @Transactional
-    public void read(Notification notification) {
-        notification.setReadDate(new Date());
+    public void read(long id) {
+        notificationRepository.findById(id)
+                .orElseThrow(() -> new NotificationNotFoundException(id))
+                .setReadDate(new Date());
     }
 
     public void add(String text, User user, Task task) {
@@ -35,13 +41,26 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public Notification findById(long id) {
-        return notificationRepository.getById(id);
+
+    public void addNotifications(NotificationMessage notificationMessage, long number, Task task, User user) {
+        getUsersForNotifications(task, user)
+                .forEach(
+                        u -> add(notificationMessage.getMessage(number), u, task)
+                );
+    }
+
+    private List<User> getUsersForNotifications(Task task, User user) {
+        return Stream.of(
+                        user.getId() != task.getOwner().getId() ? task.getOwner() : null,
+                        task.getExecutor() != null && user.getId() != task.getExecutor().getId() ? task.getExecutor() : null
+                )
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     @Transactional
-    public void setAllAsRead(User user) {
-        notificationRepository.findAllByUserAndReadDateIsNull(user)
+    public void readAllByUsername(String name) {
+        notificationRepository.findAllByUserUsernameEqualsAndReadDateIsNull(name)
                 .forEach(n -> n.setReadDate(new Date()));
     }
 }

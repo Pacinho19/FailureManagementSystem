@@ -10,6 +10,7 @@ import pl.pacinho.failuremanagementsystem.model.enums.AttachmentSource;
 import pl.pacinho.failuremanagementsystem.model.enums.Department;
 import pl.pacinho.failuremanagementsystem.model.enums.Status;
 import pl.pacinho.failuremanagementsystem.ui.model.NewMessage;
+import pl.pacinho.failuremanagementsystem.ui.model.enums.NotificationMessage;
 import pl.pacinho.failuremanagementsystem.ui.model.mapper.TaskDtoMapper;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
@@ -56,6 +57,7 @@ public class TaskService {
                 : null;
 
         task.addMessage(user, newMessage.getText(), taskMessage);
+        notificationService.addNotifications(NotificationMessage.NEW_MESSAGE, number, task, user);
     }
 
     public List<TaskDto> findByDepartmentNotConfirmed(Department department) {
@@ -98,7 +100,7 @@ public class TaskService {
         task.setExecutor(user);
         task.addSysMessage(user, SystemMessages.TASK_IN_PROGRESS);
 
-        notificationService.add("Task : " + number + " has changed status", task.getOwner(), task);
+        notificationService.addNotifications(NotificationMessage.CHANGE_TASK_STATUS, number, task, user);
     }
 
     @Transactional
@@ -106,16 +108,17 @@ public class TaskService {
         Task task = getByNumber(number);
 
         if (task.getStatus() != Status.IN_PROGRESS
-            && task.getStatus() != Status.NEW
-            && task.getStatus() != Status.SUSPENDED)
+                && task.getStatus() != Status.NEW
+                && task.getStatus() != Status.SUSPENDED)
             throw new IllegalStateException("Cannot finish task number " + number + ". Task status: " + task.getStatus());
 
         if (task.getExecutor() == null && task.getExecutor().getDepartment() == user.getDepartment()
-            || task.getExecutor() != null && task.getExecutor().getId() == user.getId()
-            || task.getOwner().getId() == user.getId()) {
+                || task.getExecutor() != null && task.getExecutor().getId() == user.getId()
+                || task.getOwner().getId() == user.getId()) {
 
             task.setStatus(Status.DONE);
             task.addSysMessage(user, SystemMessages.TASK_DONE);
+            notificationService.addNotifications(NotificationMessage.CHANGE_TASK_STATUS, number, task, user);
 
         } else
             throw new IllegalStateException("No permission for change task " + number + " status ");
@@ -133,6 +136,7 @@ public class TaskService {
 
         task.setStatus(Status.CONFIRMED);
         task.addSysMessage(user, SystemMessages.TASK_CONFIRMED);
+        notificationService.addNotifications(NotificationMessage.CHANGE_TASK_STATUS, number, task, user);
     }
 
     @Transactional
@@ -146,6 +150,7 @@ public class TaskService {
 
         task.setStatus(Status.IN_PROGRESS);
         task.addSysMessage(user, SystemMessages.TASK_DECLINED);
+        notificationService.addNotifications(NotificationMessage.CHANGE_TASK_STATUS, number, task, user);
     }
 
     @Transactional
@@ -153,16 +158,17 @@ public class TaskService {
         Task task = getByNumber(number);
 
         if (task.getStatus() != Status.IN_PROGRESS
-            && task.getStatus() != Status.NEW)
+                && task.getStatus() != Status.NEW)
             throw new IllegalStateException("Cannot suspended task number " + number + ". Task status: " + task.getStatus());
 
         if (task.getExecutor() == null && task.getExecutor().getDepartment() == user.getDepartment()
-            || task.getExecutor() != null && task.getExecutor().getId() == user.getId()
-            || task.getOwner().getId() == user.getId()) {
+                || task.getExecutor() != null && task.getExecutor().getId() == user.getId()
+                || task.getOwner().getId() == user.getId()) {
 
 
             task.setStatus(Status.SUSPENDED);
             task.addSysMessage(user, SystemMessages.TASK_SUSPENDED);
+            notificationService.addNotifications(NotificationMessage.CHANGE_TASK_STATUS, number, task, user);
         } else
             throw new IllegalStateException("No permission for change task " + number + " status ");
 
@@ -175,11 +181,12 @@ public class TaskService {
             throw new IllegalStateException("Cannot resume task number " + number + ". Task status: " + task.getStatus());
 
         if (task.getExecutor() == null && task.getExecutor().getDepartment() == user.getDepartment()
-            || task.getExecutor() != null && task.getExecutor().getId() == user.getId()
-            || task.getOwner().getId() == user.getId()) {
+                || task.getExecutor() != null && task.getExecutor().getId() == user.getId()
+                || task.getOwner().getId() == user.getId()) {
 
             task.setStatus(task.getExecutor() != null ? Status.IN_PROGRESS : Status.NEW);
             task.addSysMessage(user, SystemMessages.TASK_RESUMED);
+            notificationService.addNotifications(NotificationMessage.CHANGE_TASK_STATUS, number, task, user);
         } else
             throw new IllegalStateException("No permission for change task " + number + " status ");
 
@@ -189,11 +196,12 @@ public class TaskService {
     public void addAttachment(long number, MultipartFile file, User user, AttachmentSource source) {
         Task task = getByNumber(number);
         if (task.getStatus() != Status.NEW
-            && task.getStatus() != Status.IN_PROGRESS)
+                && task.getStatus() != Status.IN_PROGRESS)
             throw new IllegalStateException("Cannot add attachment. Task status: " + task.getStatus());
 
         String outPath = AttachmentUtils.save(number, file);
         task.addAttachment(outPath, file.getOriginalFilename(), user, source);
+        notificationService.addNotifications(NotificationMessage.NEW_ATTACHMENT, number, task, user);
     }
 
     @Transactional
@@ -212,6 +220,9 @@ public class TaskService {
         task.addSysMessage(user, SystemMessages.TASK_ADD_RELATED + relatedTaskNumber);
         relatedTask.addRelatedTask(task);
         relatedTask.addSysMessage(user, SystemMessages.TASK_ADD_RELATED + number);
+
+        notificationService.addNotifications(NotificationMessage.NEW_RELATED_TASK, number, task, user);
+        notificationService.addNotifications(NotificationMessage.NEW_RELATED_TASK, number, relatedTask, user);
     }
 
     private boolean isRelatedCase(Task task, long relatedTaskNumber) {
