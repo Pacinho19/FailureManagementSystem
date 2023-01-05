@@ -31,6 +31,8 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskMessageService taskMessageService;
 
+    private final NotificationService notificationService;
+
     @Transactional
     public Task save(NewTaskDto newTaskDto, User owner) {
         return taskRepository.save(TaskDtoMapper.toEntity(newTaskDto, owner));
@@ -95,6 +97,8 @@ public class TaskService {
         task.setStatus(Status.IN_PROGRESS);
         task.setExecutor(user);
         task.addSysMessage(user, SystemMessages.TASK_IN_PROGRESS);
+
+        notificationService.add("Task : " + number + " has changed status", task.getOwner(), task);
     }
 
     @Transactional

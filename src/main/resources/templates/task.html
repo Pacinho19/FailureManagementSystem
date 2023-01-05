@@ -25,6 +25,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
 
     <link th:href="@{/style/comment.css}" rel="stylesheet"/>
+    <script type="text/javascript" th:src="@{/js/popover.js}"></script>
 
     <style>
         .checkbox-xl .form-check-input {
@@ -42,6 +43,10 @@
 
         .quote blockquote {
           margin: 1em;
+        }
+
+        .popover{
+            min-width:550px;
         }
     </style>
 
@@ -546,14 +551,9 @@
                 $(this).next('.custom-file-label').html(filename);
             }
         })
-
-
-
-
-
-
-
 </script>
-</body>
 
+<div id="source" style="display:none;" th:insert="~{fragments/notifications :: notifications}"/>
+
+</body>
 </html>

@@ -22,11 +22,17 @@
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 
+    <script type="text/javascript" th:src="@{/js/popover.js}"></script>
+
     <style>
         .checkbox-xl .form-check-input {
             top: 1.2rem;
             scale: 2.5;
             margin-left: 1%;
+        }
+
+        .popover{
+            min-width:550px;
         }
     </style>
 
@@ -177,6 +183,7 @@
         <div class="col-md-2"></div>
     </div>
 
-</body>
+    <div id="source" style="display:none;" th:insert="~{fragments/notifications :: notifications}"/>
 
+</body>
 </html>

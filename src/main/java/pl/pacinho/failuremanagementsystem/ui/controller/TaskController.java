@@ -14,6 +14,7 @@ import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.model.enums.AttachmentSource;
 import pl.pacinho.failuremanagementsystem.service.AttachmentService;
+import pl.pacinho.failuremanagementsystem.service.NotificationService;
 import pl.pacinho.failuremanagementsystem.service.TaskService;
 import pl.pacinho.failuremanagementsystem.service.UserService;
 import pl.pacinho.failuremanagementsystem.ui.config.UIConfig;
@@ -38,10 +39,14 @@ public class TaskController {
     private final UserService userService;
     private final AttachmentService attachmentService;
 
+    private final NotificationService notificationService;
+
     @GetMapping(UIConfig.NEW_TASK)
-    public String newTask(Model model) {
+    public String newTask(Model model, Authentication authentication) {
         model.addAttribute("taskParams", TaskParams.instance());
         model.addAttribute("task", new NewTaskDto());
+        model.addAttribute("notifications", notificationService.findUnreadByUser(userService.getByLogin(authentication.getName())));
+
         return "new-task";
     }
 
@@ -57,7 +62,11 @@ public class TaskController {
                            Model model,
                            Authentication authentication) {
 
+
+
         User user = userService.getByLogin(authentication.getName());
+        model.addAttribute("notifications", notificationService.findUnreadByUser(user));
+
         TaskDto task;
         try {
             task = taskService.findByNumber(number);
