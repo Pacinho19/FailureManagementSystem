@@ -434,17 +434,14 @@
                  style="text-align:center;margin-bottom:2%;display:block">
                 <div class="bg-white p-2">
                     <div class="d-flex flex-row user-info">
-                        <i style="font-size:60px;text-align:left" class="bi bi-person-square"></i>
                         <div class="d-flex flex-column justify-content-start ml-2" style="margin-top:1%">
-                                <span style="text-align:left;font-size:25px;" class="d-block font-weight-bold name"
-                                      th:text="${comment.userName}">
+                                <span th:style="${'text-align:left;font-size:20px;color:'+comment.color}" class="d-block font-weight-bold name"
+                                      th:text="${'---   ' + comment.userName + '    [' + #temporals.format(comment.dateTime, 'dd-MM-yyyy HH:mm') +']'}">
                                 </span>
-                            <span style="margin-top:2%;font-size:20px;" class="date text-black-50"
-                                  th:text="${#temporals.format(comment.dateTime, 'dd-MM-yyyy HH:mm')}"></span>
                         </div>
                     </div>
                     <div style="text-align:left" class="mt-2">
-                        <p th:style="'text-align:left;font-size:25px;white-space: pre-line;' + ${comment.type.name=='SYS' ? 'font-weight: bold;color:#208494 ' : ''}"
+                        <p th:style="${'text-align:left;font-size:20px;white-space: pre-line;color:'+comment.color + (comment.type.name=='SYS' ? ';font-weight: bold;' : '')}"
                            class="comment-text" th:text="${comment.message}"></p>
                     </div>
                 </div>

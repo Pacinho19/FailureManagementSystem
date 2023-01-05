@@ -2,6 +2,7 @@ package pl.pacinho.failuremanagementsystem.ui.model.mapper;
 
 import pl.pacinho.failuremanagementsystem.model.entity.TaskMessage;
 import pl.pacinho.failuremanagementsystem.ui.model.MessageDto;
+import pl.pacinho.failuremanagementsystem.utils.MessageUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +18,9 @@ public class MessageDtoMapper {
         return new MessageDto(taskMessage.getUser().getFirstName() + " " + taskMessage.getUser().getLastName(),
                 taskMessage.getCreationDate(),
                 taskMessage.getText(),
-                taskMessage.getType()
+                taskMessage.getType(),
+                MessageUtils.getColor(taskMessage, taskMessage.getTask())
+
         );
     }
 }

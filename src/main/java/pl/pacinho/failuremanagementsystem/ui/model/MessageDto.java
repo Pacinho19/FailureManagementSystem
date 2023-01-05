@@ -4,5 +4,5 @@ import pl.pacinho.failuremanagementsystem.model.enums.MessageType;
 
 import java.time.LocalDateTime;
 
-public record MessageDto(String userName, LocalDateTime dateTime, String message, MessageType type) {
+public record MessageDto(String userName, LocalDateTime dateTime, String message, MessageType type, String color) {
 }
