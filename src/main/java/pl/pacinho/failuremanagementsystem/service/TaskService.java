@@ -39,7 +39,8 @@ public class TaskService {
     }
 
     public Task getByNumber(long number) {
-        return taskRepository.getById(number);
+        return taskRepository.findById(number)
+                .orElseThrow(() -> new TaskNotFoundException(number));
     }
 
     @Transactional
@@ -182,5 +183,29 @@ public class TaskService {
 
         String outPath = AttachmentUtils.save(number, file);
         task.addAttachment(outPath, file.getOriginalFilename(), user, source);
+    }
+
+    @Transactional
+    public void bind(User user, long number, Long relatedTaskNumber) {
+        if (number == relatedTaskNumber)
+            throw new IllegalStateException("Cannot bind self.");
+
+        Task task = getByNumber(number);
+
+        if (isRelatedCase(task, relatedTaskNumber))
+            throw new IllegalStateException("Cannot bind task. Task just linked");
+
+        Task relatedTask = getByNumber(relatedTaskNumber);
+
+        task.addRelatedTask(relatedTask);
+        task.addSysMessage(user, SystemMessages.TASK_ADD_RELATED + relatedTaskNumber);
+        relatedTask.addRelatedTask(task);
+        relatedTask.addSysMessage(user, SystemMessages.TASK_ADD_RELATED + number);
+    }
+
+    private boolean isRelatedCase(Task task, long relatedTaskNumber) {
+        return task.getRelatedTasks()
+                .stream()
+                .anyMatch(t -> Objects.equals(t.getNumber(), relatedTaskNumber));
     }
 }

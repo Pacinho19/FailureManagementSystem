@@ -58,6 +58,12 @@ public class TaskUtils {
             return actions2;
         }
 
+        if(task.getTargetDepartment()!=user.getDepartment()) {
+            ArrayList<TaskAction> actions2 = new ArrayList<>(actions);
+            actions2.remove(TaskAction.FINISH);
+            return actions2;
+        }
+
         return actions;
     }
 }

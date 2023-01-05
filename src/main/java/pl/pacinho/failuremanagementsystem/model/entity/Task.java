@@ -11,7 +11,9 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor
 @Getter
@@ -63,6 +65,9 @@ public class Task {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "task", cascade = CascadeType.ALL)
     private List<TaskMessage> messages;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Task> relatedTasks;
+
     public Task(String title, LocalDate deadlineDate, User owner, TaskType taskType, Event event, Department targetDepartment, String purpose, boolean changeAssumptions, String message, Priority priority) {
         this.title = title;
         this.deadlineDate = deadlineDate;
@@ -76,6 +81,7 @@ public class Task {
         this.creationDate = LocalDateTime.now();
         this.attachments = new ArrayList<>();
         this.messages = new ArrayList<>();
+        this.relatedTasks = new HashSet<>();
         this.status = Status.NEW;
         addMessage(owner, message);
     }
@@ -98,6 +104,9 @@ public class Task {
         attachments.add(
                 new Attachment(path, originalName, this, user, source)
         );
+    }
+    public void addRelatedTask(Task task){
+        relatedTasks.add(task);
     }
 
 }

@@ -113,7 +113,7 @@ public class TaskController {
 
     @PostMapping(UIConfig.ATTACHMENT_DOWNLOAD)
     public void addAttachment(@PathVariable("id") long id,
-                                HttpServletResponse response) {
+                              HttpServletResponse response) {
         try {
             File attachment = attachmentService.getAttachment(id);
             response.setContentType("application/octet-stream");
@@ -133,6 +133,12 @@ public class TaskController {
                            @RequestParam Long taskNumber,
                            Authentication authentication,
                            Model model) {
+        try {
+            taskService.bind(userService.getByLogin(authentication.getName()), number, taskNumber);
+        } catch (Exception ex) {
+            model.addAttribute("error", ex.getMessage());
+            return taskPage(number, model, authentication);
+        }
         return "redirect:" + UIConfig.TASK + "/" + number;
     }
 }

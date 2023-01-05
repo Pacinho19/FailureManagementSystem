@@ -9,4 +9,5 @@ public class SystemMessages {
     public static final String TASK_DECLINED = SYS_PREFIX + "Task declined.";
     public static final String TASK_SUSPENDED = SYS_PREFIX + "Task suspended.";
     public static final String TASK_RESUMED = SYS_PREFIX + "Task resumed.";
+    public static final String TASK_ADD_RELATED = SYS_PREFIX + "Associated with the task ";
 }
