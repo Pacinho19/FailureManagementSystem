@@ -1,3 +1,4 @@
+</style>
 <div th:fragment="notifications">
     <div  th:each="notification: ${notifications}" class="row">
         <div class="col-md-8">
@@ -13,7 +14,8 @@
         </div>
     </div>
     <div th:if="${notifications.size>0}">
-        <a href="/falsi/notification/read-all" class="link-info">Select all notification as read</a>
+        <button id="readAllNotificationsBtn" class="read-all-btn" onclick="readAll()">Select all notification as read</button>
+<!--        <a href="/falsi/notification/read-all" class="link-info">Select all notification as read</a>-->
     </div>
 
 </div>

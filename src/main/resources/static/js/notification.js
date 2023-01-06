@@ -8,12 +8,22 @@ privateStompClient.connect({}, function (frame) {
         let obj = JSON.parse(result.body);
         createAlert(obj);
         updateNavbar(obj.count);
-        updatePanel()
+        updatePanel();
+        checkPopover();
     });
 });
 
+function checkPopover() {
+    if(document.getElementById("readAllNotificationsBtn")!=null){
+        document.getElementById('popover').click();
+        setTimeout(() => {
+            document.getElementById('popover').click();
+        } , 100);
+    }
+}
+
 function updateNavbar(count){
-document.getElementById('notificationBadge').innerHTML=''+count;
+    document.getElementById('notificationBadge').innerHTML=''+count;
 }
 
 function updatePanel() {
@@ -35,4 +45,12 @@ function getAlertText(notificationAlert) {
         + '<button type="button" class="close" data-dismiss="alert">x</button>'
         + '<strong>' + notificationAlert.text + '</strong>'
         + '</div>';
+}
+
+function readAll(){
+    $.get("/falsi/notification/read-all").done(function () {
+        updateNavbar(0);
+        $('#popover').popover('hide');
+        $('#popover').attr('data-content', '');
+    });
 }
