@@ -5,10 +5,22 @@ socket = new SockJS('/ws');
 privateStompClient = Stomp.over(socket);
 privateStompClient.connect({}, function (frame) {
     privateStompClient.subscribe('/users/notification', function (result) {
-        createAlert(JSON.parse(result.body));
-        //updatePanel()
+        let obj = JSON.parse(result.body);
+        createAlert(obj);
+        updateNavbar(obj.count);
+        updatePanel()
     });
 });
+
+function updateNavbar(count){
+document.getElementById('notificationBadge').innerHTML=''+count;
+}
+
+function updatePanel() {
+    $.post("/falsi/notification/refresh").done(function (fragment) {
+        $('#popover').attr('data-content', fragment);
+    });
+}
 
 function createAlert(notificationAlert) {
     document.getElementById('notificationAlert').insertAdjacentHTML('beforeend', getAlertText(notificationAlert));

@@ -7,6 +7,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
+import pl.pacinho.failuremanagementsystem.service.NotificationService;
 import pl.pacinho.failuremanagementsystem.ui.model.NotificationAlertDto;
 
 @RequiredArgsConstructor
@@ -16,10 +17,10 @@ public class NotificationWSController {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @MessageMapping("/notification")
-    public void notification(User user, String message) {
+    public void notification(User user, String message, long count) {
         simpMessagingTemplate.convertAndSendToUser(user.getUsername(),
                 "/notification",
-                new NotificationAlertDto(message));
+                new NotificationAlertDto(message, count));
 
     }
 

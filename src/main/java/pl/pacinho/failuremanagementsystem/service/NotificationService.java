@@ -41,7 +41,7 @@ public class NotificationService {
         notification.setAddDate(new Date());
         notification.setTask(task);
         notificationRepository.save(notification);
-        notificationWSController.notification(user, text);
+        notificationWSController.notification(user, text, getUnreadCountByUser(user));
     }
 
 
@@ -65,5 +65,9 @@ public class NotificationService {
     public void readAllByUsername(String name) {
         notificationRepository.findAllByUserUsernameEqualsAndReadDateIsNull(name)
                 .forEach(n -> n.setReadDate(new Date()));
+    }
+
+    public long getUnreadCountByUser(User user) {
+        return notificationRepository.countByUserAndReadDateIsNullOrderByIdDesc(user);
     }
 }

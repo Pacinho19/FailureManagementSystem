@@ -13,4 +13,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     List<Notification> findAllByUserAndReadDateIsNullOrderByIdDesc(User user);
 
     List<Notification> findAllByUserUsernameEqualsAndReadDateIsNull(String name);
+
+    long countByUserAndReadDateIsNullOrderByIdDesc(User user);
 }

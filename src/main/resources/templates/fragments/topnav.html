@@ -1,5 +1,6 @@
 <nav style="width:100%" th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-light"
-     xmlns:th="http://www.w3.org/1999/xhtml">
+     xmlns:th="http://www.w3.org/1999/xhtml"
+     id="topNav">
     <a href="/falsi/home">
         <img th:src="@{/img/logo.png}" width="70px" height="75px" style="float:left;margin-left:2%;">
     </a>
@@ -16,9 +17,9 @@
             </li>
         </ul>
 
-        <div th:replace="fragments/notification-nav-item :: notificationsItem(count=${notifications.size})" />
+        <div th:replace="fragments/notification-nav-item :: notificationsItem(count=${notifications.size})"/>
 
-<!--        <span th:text="${user.firstName + ' ' + user.lastName}"></span>-->
+        <!--        <span th:text="${user.firstName + ' ' + user.lastName}"></span>-->
         <a class="nav-link bi bi-power" href="/logout">Logout</a>
     </div>
 
