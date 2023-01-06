@@ -7,5 +7,5 @@ $(function () {
 })
 
 $(function() {
-    $('#popover').attr('data-content', $('#source').html());
+    $('#popover').attr('data-content', $('#output').html());
 });

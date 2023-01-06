@@ -21,6 +21,10 @@
     <script src="https://momentjs.com/downloads/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
+    <script type="text/javascript" th:src="@{/js/notification.js}"></script>
+
     <link th:href="@{/style/comment.css}" rel="stylesheet"/>
     <script type="text/javascript" th:src="@{/js/popover.js}"></script>
 
@@ -523,7 +527,9 @@
             </div>
         </div>
     </div>
-    <div class="col-md-2"></div>
+    <div class="col-md-2">
+        <div id="notificationAlert"></div>
+    </div>
 </div>
 
 <script>
@@ -552,7 +558,7 @@
         })
 </script>
 
-<div id="source" style="display:none;" th:insert="~{fragments/notifications :: notifications}"/>
+<div id="output" style="display:none;" th:insert="~{fragments/notifications :: notifications}"/>
 
 </body>
 </html>

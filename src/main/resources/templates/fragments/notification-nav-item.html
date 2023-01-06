@@ -1,0 +1,8 @@
+<a th:fragment="notificationsItem(count)" id="popover" style="max-width: 100%;" type="button" class="nav-link bi bi-bell"
+   data-toggle="popover"
+   data-placement="bottom" 
+   data-html="true"
+   data-content="">
+    Notifications
+    <span id="notificationBadge" class="badge badge-secondary" th:text="${notifications.size}"></span>
+</a>

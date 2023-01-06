@@ -17,4 +17,5 @@ public class UIConfig {
     public static final String NOTIFICATION_ID = NOTIFICATION + "/{id}";
     public static final String NOTIFICATION_READ = NOTIFICATION_ID + "/read";
     public static final String NOTIFICATION_READ_ALL = NOTIFICATION + "/read-all";
+    public static final String NOTIFICATION_REFRESH = NOTIFICATION + "/refresh";
 }

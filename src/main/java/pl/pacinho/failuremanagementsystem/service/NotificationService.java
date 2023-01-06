@@ -3,6 +3,7 @@ package pl.pacinho.failuremanagementsystem.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.pacinho.failuremanagementsystem.controller.NotificationWSController;
 import pl.pacinho.failuremanagementsystem.exception.NotificationNotFoundException;
 import pl.pacinho.failuremanagementsystem.model.entity.Notification;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
@@ -20,6 +21,7 @@ import java.util.stream.Stream;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final NotificationWSController notificationWSController;
 
     public List<Notification> findUnreadByUser(User user) {
         return notificationRepository.findAllByUserAndReadDateIsNullOrderByIdDesc(user);
@@ -39,6 +41,7 @@ public class NotificationService {
         notification.setAddDate(new Date());
         notification.setTask(task);
         notificationRepository.save(notification);
+        notificationWSController.notification(user, text);
     }
 
 
