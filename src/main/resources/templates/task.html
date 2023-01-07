@@ -320,8 +320,9 @@
 
                             <div class="input-group"
                                  th:if="${task.owner!=null && task.owner.department==user.department
-                                 && task.status.name=='NEW' && task.status.name=='IN_PROGRESS'}"
+                                 && (task.status.name=='NEW' || task.status.name=='IN_PROGRESS')}"
                                  style="width:70%;">
+
                                 <form method="post"
                                       th:action="@{'/falsi/task/' + ${task.number} + '/add-attachment'}"
                                       enctype="multipart/form-data" style="width:100%;">
@@ -386,7 +387,7 @@
 
                             <div class="input-group"
                                  th:if="${task.targetDepartment==user.department
-                                 && task.status.name=='NEW' && task.status.name=='IN_PROGRESS'}"
+                                 && (task.status.name=='NEW' || task.status.name=='IN_PROGRESS')}"
                                  style="width:70%;">
                                 <form method="post"
                                       th:action="@{'/falsi/task/' + ${task.number} + '/add-attachment'}"
@@ -447,7 +448,7 @@
                                 </div>
                             </th:block>
 
-                            <div class="input-group" style="width:70%;" th:if="${task.status.name=='NEW' && task.status.name=='IN_PROGRESS'}">
+                            <div class="input-group" style="width:70%;" th:if="${task.status.name=='NEW' || task.status.name=='IN_PROGRESS'}">
                                 <form method="post" th:action="@{'/falsi/task/' + ${task.number} + '/bind'}"
                                       style="width:100%;">
                                     <div class="input-group" style="width:100%;">
