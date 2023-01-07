@@ -9,20 +9,20 @@ import pl.pacinho.failuremanagementsystem.model.entity.TaskMessage;
 import pl.pacinho.failuremanagementsystem.model.enums.AttachmentSource;
 import pl.pacinho.failuremanagementsystem.model.enums.Department;
 import pl.pacinho.failuremanagementsystem.model.enums.Status;
-import pl.pacinho.failuremanagementsystem.ui.model.NewMessage;
+import pl.pacinho.failuremanagementsystem.ui.model.*;
 import pl.pacinho.failuremanagementsystem.ui.model.enums.NotificationMessage;
+import pl.pacinho.failuremanagementsystem.ui.model.mapper.SearchResultMapper;
 import pl.pacinho.failuremanagementsystem.ui.model.mapper.TaskDtoMapper;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.repository.TaskRepository;
-import pl.pacinho.failuremanagementsystem.ui.model.NewTaskDto;
-import pl.pacinho.failuremanagementsystem.ui.model.TaskDto;
 import pl.pacinho.failuremanagementsystem.ui.tools.SystemMessages;
 import pl.pacinho.failuremanagementsystem.utils.AttachmentUtils;
 import pl.pacinho.failuremanagementsystem.utils.CollectionsUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
@@ -229,5 +229,15 @@ public class TaskService {
         return task.getRelatedTasks()
                 .stream()
                 .anyMatch(t -> Objects.equals(t.getNumber(), relatedTaskNumber));
+    }
+
+    public List<SearchResultDto> search(String searchText) {
+        return SearchResultMapper.parseItems(taskRepository.search(searchText))
+                .stream()
+                .collect(Collectors.groupingBy(SearchResultItem::number))
+                .values()
+                .stream()
+                .map(SearchResultMapper::parseDto)
+                .toList();
     }
 }

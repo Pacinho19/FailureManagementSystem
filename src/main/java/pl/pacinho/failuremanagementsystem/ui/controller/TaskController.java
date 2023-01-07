@@ -18,10 +18,7 @@ import pl.pacinho.failuremanagementsystem.service.NotificationService;
 import pl.pacinho.failuremanagementsystem.service.TaskService;
 import pl.pacinho.failuremanagementsystem.service.UserService;
 import pl.pacinho.failuremanagementsystem.ui.config.UIConfig;
-import pl.pacinho.failuremanagementsystem.ui.model.NewMessage;
-import pl.pacinho.failuremanagementsystem.ui.model.NewTaskDto;
-import pl.pacinho.failuremanagementsystem.ui.model.TaskDto;
-import pl.pacinho.failuremanagementsystem.ui.model.TaskParams;
+import pl.pacinho.failuremanagementsystem.ui.model.*;
 import pl.pacinho.failuremanagementsystem.ui.taksaction.model.TaskAction;
 import pl.pacinho.failuremanagementsystem.ui.taksaction.model.TaskStatus;
 import pl.pacinho.failuremanagementsystem.ui.tools.TaskUtils;
@@ -30,6 +27,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -61,7 +59,6 @@ public class TaskController {
     public String taskPage(@PathVariable("number") long number,
                            Model model,
                            Authentication authentication) {
-
 
 
         User user = userService.getByLogin(authentication.getName());
@@ -150,5 +147,15 @@ public class TaskController {
             return taskPage(number, model, authentication);
         }
         return "redirect:" + UIConfig.TASK + "/" + number;
+    }
+
+    @GetMapping(UIConfig.TASK_SEARCH)
+    public String search(@RequestParam("searchText") String searchText,
+                         Authentication authentication,
+                         Model model) {
+        User user = userService.getByLogin(authentication.getName());
+        model.addAttribute("notifications", notificationService.findUnreadByUser(user));
+        model.addAttribute("searchResults", taskService.search(searchText));
+        return "search-result";
     }
 }
