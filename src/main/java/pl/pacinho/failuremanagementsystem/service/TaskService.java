@@ -110,9 +110,9 @@ public class TaskService {
                 && task.getStatus() != Status.SUSPENDED)
             throw new IllegalStateException("Cannot finish task number " + number + ". Task status: " + task.getStatus());
 
-        if (task.getExecutor() == null && task.getExecutor().getDepartment() == user.getDepartment()
-                || task.getExecutor() != null && task.getExecutor().getId() == user.getId()
-                || task.getOwner().getId() == user.getId()) {
+        if ((task.getExecutor() == null && task.getTargetDepartment() == user.getDepartment())
+                || (task.getExecutor() != null && task.getExecutor().getId() == user.getId())
+                || (task.getOwner().getId() == user.getId())) {
 
             task.setStatus(Status.DONE);
             task.addSysMessage(user, SystemMessages.TASK_DONE);
