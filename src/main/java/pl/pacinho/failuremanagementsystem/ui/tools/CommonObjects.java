@@ -8,6 +8,7 @@ import pl.pacinho.failuremanagementsystem.model.dto.mapper.UserDtoMapper;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.service.NotificationService;
 import pl.pacinho.failuremanagementsystem.service.UserService;
+import pl.pacinho.failuremanagementsystem.ui.model.SearchOptionsDto;
 
 @RequiredArgsConstructor
 @Component
@@ -20,6 +21,8 @@ public class CommonObjects {
         User user = userService.getByLogin(authentication.getName());
         model.addAttribute("user", UserDtoMapper.parseToDto(user));
         model.addAttribute("notifications", notificationService.findUnreadByUser(user));
+        if (model.getAttribute("searchOptions") == null)
+            model.addAttribute("searchOptions", new SearchOptionsDto());
         return user;
     }
 }

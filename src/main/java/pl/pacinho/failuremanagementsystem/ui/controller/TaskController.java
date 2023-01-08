@@ -146,12 +146,20 @@ public class TaskController {
         return "redirect:" + UIConfig.TASK + "/" + number;
     }
 
-    @GetMapping(UIConfig.TASK_SEARCH)
-    public String search(@RequestParam("searchText") String searchText,
+    @PostMapping(UIConfig.TASK_SEARCH)
+    public String search(SearchOptionsDto searchOptionsDto,
                          Authentication authentication,
                          Model model) {
         commonObjects.setData(model, authentication);
-        model.addAttribute("searchResults", taskService.search(searchText));
+        model.addAttribute("searchResults", taskService.search(searchOptionsDto));
+        model.addAttribute("searchOptions", searchOptionsDto);
+        return "search-result";
+    }
+
+    @GetMapping(UIConfig.TASK_SEARCH)
+    public String search(Authentication authentication,
+                         Model model) {
+        commonObjects.setData(model, authentication);
         return "search-result";
     }
 }

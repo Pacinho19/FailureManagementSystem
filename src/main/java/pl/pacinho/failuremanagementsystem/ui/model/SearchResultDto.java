@@ -2,7 +2,7 @@ package pl.pacinho.failuremanagementsystem.ui.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import pl.pacinho.failuremanagementsystem.ui.model.enums.SearchResultType;
+import pl.pacinho.failuremanagementsystem.ui.model.enums.SearchType;
 
 import java.util.List;
 
@@ -12,5 +12,5 @@ public class SearchResultDto {
 
     private long number;
     private String title;
-    private List<SearchResultType> types;
+    private List<SearchType> types;
 }

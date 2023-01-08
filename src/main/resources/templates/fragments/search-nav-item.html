@@ -5,17 +5,18 @@
 <!--            <button type="submit" class="btn btn-outline-secondary">-->
 <!--                <i class="bi bi-search"></i>-->
 <!--            </button>-->
-<!--        </div>-->
+<!--        </div>-->x
 <!--    </form>-->
 <!--</div>-->
 <div th:fragment="searchItem" class="search-container" style="display: flex;justify-content: center;margin-top:1%">
-    <form method="get" action="/falsi/task/search">
+    <form method="post" action="/falsi/task/search" th:object="${searchOptions}">
         <div class="input-group mb-3">
             <input type="text"
                    placeholder="Search.."
                    name="searchText"
                    class="form-control"
-                   th:value="${param.searchText != null ? param.searchText : ''}">
+                   th:field="*{searchText}"
+                   th:value="${searchText != null ? param.searchText : ''}">
             <div class="input-group-append">
                 <button type="submit" class="btn btn-outline-secondary">
                     <i class="bi bi-search"></i>

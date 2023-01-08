@@ -1,6 +1,6 @@
 package pl.pacinho.failuremanagementsystem.repository.model;
 
-import pl.pacinho.failuremanagementsystem.ui.model.enums.SearchResultType;
+import pl.pacinho.failuremanagementsystem.ui.model.enums.SearchType;
 
 public interface SearchResultI {
 
@@ -8,5 +8,5 @@ public interface SearchResultI {
 
     String getTitle();
 
-    SearchResultType getType();
+    SearchType getType();
 }

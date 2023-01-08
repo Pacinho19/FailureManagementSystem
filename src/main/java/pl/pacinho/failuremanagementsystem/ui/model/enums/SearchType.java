@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum SearchResultType {
+public enum SearchType {
 
     NUMBER("badge badge-secondary"),
     TITLE("badge badge-primary"),

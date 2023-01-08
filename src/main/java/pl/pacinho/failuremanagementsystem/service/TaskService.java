@@ -231,8 +231,11 @@ public class TaskService {
                 .anyMatch(t -> Objects.equals(t.getNumber(), relatedTaskNumber));
     }
 
-    public List<SearchResultDto> search(String searchText) {
-        return SearchResultMapper.parseItems(taskRepository.search(searchText))
+    public List<SearchResultDto> search(SearchOptionsDto searchOptionsDto) {
+        if (searchOptionsDto.getSelectedTypes() == null || searchOptionsDto.getSelectedTypes().isEmpty())
+            searchOptionsDto.init();
+
+        return SearchResultMapper.parseItems(taskRepository.search(searchOptionsDto.getSearchText()))
                 .stream()
                 .collect(Collectors.groupingBy(SearchResultItem::number))
                 .values()
