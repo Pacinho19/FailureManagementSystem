@@ -6,12 +6,18 @@ privateStompClient = Stomp.over(socket);
 privateStompClient.connect({}, function (frame) {
     privateStompClient.subscribe('/users/notification', function (result) {
         let obj = JSON.parse(result.body);
+        notificationSound();
         createAlert(obj);
         updateNavbar(obj.count);
         updatePanel();
         checkPopover();
     });
 });
+
+function notificationSound() {
+    var audio = new Audio('/audio/notification.mp3');
+    audio.play();
+}
 
 function checkPopover() {
     if(document.getElementById("readAllNotificationsBtn")!=null){

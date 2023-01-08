@@ -21,6 +21,7 @@ import pl.pacinho.failuremanagementsystem.ui.config.UIConfig;
 import pl.pacinho.failuremanagementsystem.ui.model.*;
 import pl.pacinho.failuremanagementsystem.ui.taksaction.model.TaskAction;
 import pl.pacinho.failuremanagementsystem.ui.taksaction.model.TaskStatus;
+import pl.pacinho.failuremanagementsystem.ui.tools.CommonObjects;
 import pl.pacinho.failuremanagementsystem.ui.tools.TaskUtils;
 
 import javax.servlet.ServletOutputStream;
@@ -36,15 +37,13 @@ public class TaskController {
     private final TaskService taskService;
     private final UserService userService;
     private final AttachmentService attachmentService;
-
-    private final NotificationService notificationService;
+    private final CommonObjects commonObjects;
 
     @GetMapping(UIConfig.NEW_TASK)
     public String newTask(Model model, Authentication authentication) {
+        commonObjects.setData(model, authentication);
         model.addAttribute("taskParams", TaskParams.instance());
         model.addAttribute("task", new NewTaskDto());
-        model.addAttribute("notifications", notificationService.findUnreadByUser(userService.getByLogin(authentication.getName())));
-
         return "new-task";
     }
 
@@ -61,8 +60,7 @@ public class TaskController {
                            Authentication authentication) {
 
 
-        User user = userService.getByLogin(authentication.getName());
-        model.addAttribute("notifications", notificationService.findUnreadByUser(user));
+        User user = commonObjects.setData(model, authentication);
 
         TaskDto task;
         try {
@@ -114,7 +112,6 @@ public class TaskController {
             model.addAttribute("error", ex.getMessage());
             return taskPage(number, model, authentication);
         }
-
         return "redirect:" + UIConfig.TASK + "/" + number;
     }
 
@@ -153,8 +150,7 @@ public class TaskController {
     public String search(@RequestParam("searchText") String searchText,
                          Authentication authentication,
                          Model model) {
-        User user = userService.getByLogin(authentication.getName());
-        model.addAttribute("notifications", notificationService.findUnreadByUser(user));
+        commonObjects.setData(model, authentication);
         model.addAttribute("searchResults", taskService.search(searchText));
         return "search-result";
     }
