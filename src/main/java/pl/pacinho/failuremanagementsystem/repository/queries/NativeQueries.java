@@ -1,34 +1,31 @@
 package pl.pacinho.failuremanagementsystem.repository.queries;
 
 public class NativeQueries {
-    public static final String TASK_SEARCH = """
+    public static final String TASK_SEARCH_BY_NUMBER = """
             SELECT DISTINCT
                 t.number as number, t.title as title, 'NUMBER' as type
             FROM
                 TASK t
             WHERE
                 ('' || t.number) containing :searchText
-            
-            UNION
-            
+            """;
+    public static final String TASK_SEARCH_BY_TITLE = """
             SELECT DISTINCT
                 t.number as number, t.title as title, 'TITLE' as type
             FROM
                 TASK t
             WHERE
                 lower(t.title) containing lower(:searchText)
-                
-            UNION
-            
+            """;
+    public static final String TASK_SEARCH_BY_PURPOSE = """
             SELECT DISTINCT
                 t.number as number, t.title as title, 'PURPOSE' as type
             FROM
                 TASK t
             WHERE
                 lower(t.purpose) containing lower(:searchText)
-                
-            UNION
-            
+            """;
+    public static final String TASK_SEARCH_BY_MESSAGE = """
             SELECT DISTINCT
                 t.number as number, t.title as title, 'MESSAGE' as type
             FROM
@@ -38,9 +35,8 @@ public class NativeQueries {
             WHERE
                 m.type is distinct from 'SYS'
                 and lower(m.text) containing lower(:searchText)
-
-            UNION
-            
+            """;
+    public static final String TASK_SEARCH_BY_ATTACHMENT_NAME = """
             SELECT DISTINCT
                 t.number as number, t.title as title, 'ATTACHMENT_NAME' as type
             FROM

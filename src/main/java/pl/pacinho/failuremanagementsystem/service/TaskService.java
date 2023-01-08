@@ -11,7 +11,6 @@ import pl.pacinho.failuremanagementsystem.model.enums.Department;
 import pl.pacinho.failuremanagementsystem.model.enums.Status;
 import pl.pacinho.failuremanagementsystem.ui.model.*;
 import pl.pacinho.failuremanagementsystem.ui.model.enums.NotificationMessage;
-import pl.pacinho.failuremanagementsystem.ui.model.mapper.SearchResultMapper;
 import pl.pacinho.failuremanagementsystem.ui.model.mapper.TaskDtoMapper;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
@@ -22,7 +21,6 @@ import pl.pacinho.failuremanagementsystem.utils.CollectionsUtils;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
@@ -31,8 +29,8 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final TaskMessageService taskMessageService;
-
     private final NotificationService notificationService;
+    private final SearchService searchService;
 
     @Transactional
     public Task save(NewTaskDto newTaskDto, User owner) {
@@ -232,15 +230,6 @@ public class TaskService {
     }
 
     public List<SearchResultDto> search(SearchOptionsDto searchOptionsDto) {
-        if (searchOptionsDto.getSelectedTypes() == null || searchOptionsDto.getSelectedTypes().isEmpty())
-            searchOptionsDto.init();
-
-        return SearchResultMapper.parseItems(taskRepository.search(searchOptionsDto.getSearchText()))
-                .stream()
-                .collect(Collectors.groupingBy(SearchResultItem::number))
-                .values()
-                .stream()
-                .map(SearchResultMapper::parseDto)
-                .toList();
+        return searchService.search(searchOptionsDto);
     }
 }
