@@ -3,7 +3,7 @@ package pl.pacinho.failuremanagementsystem.repository.queries;
 public class NativeQueries {
     public static final String TASK_SEARCH_BY_NUMBER = """
             SELECT DISTINCT
-                t.number as number, t.title as title, 'NUMBER' as type
+                t.number as "number", t.title as "title", trim('NUMBER') as "type"
             FROM
                 TASK t
             WHERE
@@ -11,7 +11,7 @@ public class NativeQueries {
             """;
     public static final String TASK_SEARCH_BY_TITLE = """
             SELECT DISTINCT
-                t.number as number, t.title as title, 'TITLE' as type
+                t.number as "number", t.title as "title",  trim('TITLE') as "type"
             FROM
                 TASK t
             WHERE
@@ -19,7 +19,7 @@ public class NativeQueries {
             """;
     public static final String TASK_SEARCH_BY_PURPOSE = """
             SELECT DISTINCT
-                t.number as number, t.title as title, 'PURPOSE' as type
+                t.number as "number", t.title as "title",  trim('PURPOSE') as "type"
             FROM
                 TASK t
             WHERE
@@ -27,7 +27,7 @@ public class NativeQueries {
             """;
     public static final String TASK_SEARCH_BY_MESSAGE = """
             SELECT DISTINCT
-                t.number as number, t.title as title, 'MESSAGE' as type
+                t.number as "number", t.title as "title",  trim('MESSAGE') as "type"
             FROM
                 TASK t
             JOIN
@@ -38,7 +38,7 @@ public class NativeQueries {
             """;
     public static final String TASK_SEARCH_BY_ATTACHMENT_NAME = """
             SELECT DISTINCT
-                t.number as number, t.title as title, 'ATTACHMENT_NAME' as type
+                t.number as "number", t.title as "title", trim('ATTACHMENT_NAME') as "type"
             FROM
                 TASK t
             JOIN

@@ -23,7 +23,7 @@ public class SearchService {
 
         return searchRepository.search(searchOptionsDto)
                 .stream()
-                .collect(Collectors.groupingBy(SearchResultItem::number))
+                .collect(Collectors.groupingBy(SearchResultItem::getNumber))
                 .values()
                 .stream()
                 .map(SearchResultMapper::parseDto)
