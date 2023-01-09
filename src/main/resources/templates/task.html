@@ -51,6 +51,10 @@
         .popover{
             min-width:550px;
         }
+
+
+
+
     </style>
 
     <script>
@@ -80,6 +84,10 @@
             document.getElementById("deadlineDaysLeft").innerHTML = '(Left: ' + Math.ceil(dif / (1000 * 3600 * 24)) + ' days)';
             document.getElementById("deadlineDaysLeft").style.color = dif > 0 ? 'green' : 'red';
         }
+
+
+
+
     </script>
 
     <script>
@@ -88,6 +96,10 @@
             document.getElementById("action").value = actionName;
             form.submit();
         }
+
+
+
+
     </script>
 
     <script>
@@ -96,6 +108,10 @@
             document.getElementById("quoteMessage").innerHTML=messageText;
             document.getElementById("quote").style.display="block";
         }
+
+
+
+
     </script>
 
     <script>
@@ -104,6 +120,10 @@
             document.getElementById("quoteMessage").innerHTML=null;
             document.getElementById("quote").style.display="none";
         }
+
+
+
+
     </script>
 
 </head>
@@ -131,7 +151,7 @@
                         <form th:action="@{'/falsi/task/' + ${task.number} + '/follow'}" method="post">
                             <input type="hidden" name="state" th:value="${followButton.value}">
                             <button type="submit" th:text="${followButton.name}" th:class="${followButton.styleClass}"
-                            th:disabled="${task.owner.id==user.id || (task.executor!=null && task.executor.id==user.id)}"
+                                    th:disabled="${task.owner.id==user.id || (task.executor!=null && task.executor.id==user.id)}"
                             ></button>
                         </form>
                     </div>
@@ -139,90 +159,140 @@
             </div>
             <div class="card-body">
 
-                <!--Task Department -->
-                <div class="form-group row">
-                    <div class="col-sm-2">
-                        <label for="title" class="col-form-label"
-                               style="text-align:center;font-size:14px;border-style: groove;width:100%">Department</label>
+                <div class="row">
+                    <div class="col-md-4">
+                        <!--Task Department -->
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label for="title" class="col-form-label"
+                                       style="text-align:center;font-size:14px;border-style: groove;width:100%">Department</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <h5 id="title" th:text="${task.targetDepartment}" style="height:100%;width:100%">
+                                    Department</h5>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-10">
-                        <h5 id="title" th:text="${task.targetDepartment}" style="height:100%;width:100%">Department</h5>
+                    <div class="col-md-4">
+                        <!--Task Priotity -->
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label for="priority" class="col-form-label"
+                                       style="text-align:center;font-size:14px;border-style: groove;width:100%">Priority</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <h5 id="priority" th:text="${task.priority.name}" style="height:100%;width:100%">
+                                    Priority
+                                </h5>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <!--Task Priotity -->
-                <div class="form-group row">
-                    <div class="col-sm-2">
-                        <label for="priority" class="col-form-label"
-                               style="text-align:center;font-size:14px;border-style: groove;width:100%">Priority</label>
-                    </div>
-                    <div class="col-sm-10">
-                        <h5 id="priority" th:text="${task.priority.name}" style="height:100%;width:100%">Priority
-                        </h5>
-                    </div>
-                </div>
-
-                <!--Task Type -->
-                <div class="form-group row">
-                    <div class="col-sm-2">
-                        <label for="type" class="col-form-label"
-                               style="text-align:center;font-size:14px;border-style: groove;width:100%">Type</label>
-                    </div>
-                    <div class="col-sm-10">
-                        <h5 id="type" th:text="${task.taskType.name}" style="height:100%;width:100%">Type</h5>
-                    </div>
-                </div>
-
-                <!--Task Event -->
-                <div class="form-group row">
-                    <div class="col-sm-2">
-                        <label for="event" class="col-form-label"
-                               style="text-align:center;font-size:14px;border-style: groove;width:100%">Event</label>
-                    </div>
-                    <div class="col-sm-10">
-                        <h5 id="event" th:text="${task.event.name}" style="height:100%;width:100%">Event</h5>
+                    <div class="col-md-4">
+                        <!--Task Type -->
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label for="type" class="col-form-label"
+                                       style="text-align:center;font-size:14px;border-style: groove;width:100%">Type</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <h5 id="type" th:text="${task.taskType.name}" style="height:100%;width:100%">Type</h5>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!--Task Purpose -->
-                <div class="form-group row">
-                    <div class="col-sm-2">
-                        <label for="purpose" class="col-form-label"
-                               style="text-align:center;font-size:14px;border-style: groove;width:100%">Purpose</label>
+                <div class="row">
+                    <div class="col-md-4">
+                        <!--Task Event -->
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label for="event" class="col-form-label"
+                                       style="text-align:center;font-size:14px;border-style: groove;width:100%">Event</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <h5 id="event" th:text="${task.event.name}" style="height:100%;width:100%">Event</h5>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-10">
-                        <h5 id="purpose" th:text="${task.purpose}" style="height:100%;width:100%">Purpose</h5>
+                    <div class="col-md-4">
+                        <!--Task Purpose -->
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label for="purpose" class="col-form-label"
+                                       style="text-align:center;font-size:14px;border-style: groove;width:100%">Purpose</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <h5 id="purpose" th:text="${task.purpose}" style="height:100%;width:100%">Purpose</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <!--Task Creation date -->
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label for="creationDate" class="col-form-label"
+                                       style="text-align:center;font-size:14px;border-style: groove;width:100%">Creation
+                                    date</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <h5 id="creationDate" th:text="${#temporals.format(task.creationDate, 'dd-MM-yyyy')}"
+                                    style="height:100%;width:100%">Creation
+                                    date</h5>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!--Task Creation date -->
-                <div class="form-group row">
-                    <div class="col-sm-2">
-                        <label for="creationDate" class="col-form-label"
-                               style="text-align:center;font-size:14px;border-style: groove;width:100%">Creation
-                            date</label>
-                    </div>
-                    <div class="col-sm-10">
-                        <h5 id="creationDate" th:text="${#temporals.format(task.creationDate, 'dd-MM-yyyy')}"
-                            style="height:100%;width:100%">Creation
-                            date</h5>
-                    </div>
-                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <!--Task Deadline date -->
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label for="deadlineDate" class="col-form-label"
+                                       style="text-align:center;font-size:14px;border-style: groove;width:100%">Deadline
+                                    date</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="row" style="width:100%;margin-left:0">
+                                    <h5 id="deadlineDate"
+                                        th:text="${#temporals.format(task.deadlineDate, 'dd-MM-yyyy')}"
+                                        style="height:100%;margin-left:0"> Deadline date</h5>
 
-                <!--Task Deadline date -->
-                <div class="form-group row">
-                    <div class="col-sm-2">
-                        <label for="deadlineDate" class="col-form-label"
-                               style="text-align:center;font-size:14px;border-style: groove;width:100%">Deadline
-                            date</label>
+                                    <h5 id="deadlineDaysLeft" style="margin-left: 1%;text-align: left;">
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-10">
-                        <div class="row" style="width:100%;margin-left:0">
-                            <h5 id="deadlineDate" th:text="${#temporals.format(task.deadlineDate, 'dd-MM-yyyy')}"
-                                style="height:100%;margin-left:0"> Deadline date</h5>
+                    <div class="col-md-4">
+                        <!--Owner -->
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label for="owner" class="col-form-label"
+                                       style="text-align:center;font-size:14px;border-style: groove;width:100%">Owner</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="row" style="width:100%;margin-left:0">
+                                    <h5 id="owner" th:text="${task.owner.getName()}" style="height:100%;margin-left:0">Owner
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <!--Executor -->
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label for="executor" class="col-form-label"
+                                       style="text-align:center;font-size:14px;border-style: groove;width:100%">Executor</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="row" style="width:100%;margin-left:0">
+                                    <h5 id="executor" th:text="${task.executor!=null ? task.executor.getName() : ''}"
+                                        style="height:100%;margin-left:0">Executor</h5>
 
-                            <h5 id="deadlineDaysLeft" style="margin-left: 1%;text-align: left;">
-                            </h5>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -249,37 +319,6 @@
                                   id="actionForm">
                                 <input type="hidden" id="action" name="action">
                             </form>
-                        </div>
-                    </div>
-                </div>
-
-
-                <!--Owner -->
-                <div class="form-group row">
-                    <div class="col-sm-2">
-                        <label for="owner" class="col-form-label"
-                               style="text-align:center;font-size:14px;border-style: groove;width:100%">Owner</label>
-                    </div>
-                    <div class="col-sm-10">
-                        <div class="row" style="width:100%;margin-left:0">
-                            <h5 id="owner" th:text="${task.owner.getName()}" style="height:100%;margin-left:0">Owner
-                            </h5>
-
-                        </div>
-                    </div>
-                </div>
-
-                <!--Executor -->
-                <div class="form-group row">
-                    <div class="col-sm-2">
-                        <label for="executor" class="col-form-label"
-                               style="text-align:center;font-size:14px;border-style: groove;width:100%">Executor</label>
-                    </div>
-                    <div class="col-sm-10">
-                        <div class="row" style="width:100%;margin-left:0">
-                            <h5 id="executor" th:text="${task.executor!=null ? task.executor.getName() : ''}"
-                                style="height:100%;margin-left:0">Executor</h5>
-
                         </div>
                     </div>
                 </div>
@@ -453,7 +492,8 @@
                                 </div>
                             </th:block>
 
-                            <div class="input-group" style="width:70%;" th:if="${task.status.name=='NEW' || task.status.name=='IN_PROGRESS'}">
+                            <div class="input-group" style="width:70%;"
+                                 th:if="${task.status.name=='NEW' || task.status.name=='IN_PROGRESS'}">
                                 <form method="post" th:action="@{'/falsi/task/' + ${task.number} + '/bind'}"
                                       style="width:100%;">
                                     <div class="input-group" style="width:100%;">
@@ -575,6 +615,10 @@
                 $(this).next('.custom-file-label').html(filename);
             }
         })
+
+
+
+
 </script>
 
 <div id="output" style="display:none;" th:insert="~{fragments/notifications :: notifications}"/>
