@@ -31,6 +31,7 @@ public class TaskService {
     private final TaskMessageService taskMessageService;
     private final NotificationService notificationService;
     private final SearchService searchService;
+    private final TaskFollowService taskFollowService;
 
     @Transactional
     public Task save(NewTaskDto newTaskDto, User owner) {
@@ -106,13 +107,13 @@ public class TaskService {
         Task task = getByNumber(number);
 
         if (task.getStatus() != Status.IN_PROGRESS
-                && task.getStatus() != Status.NEW
-                && task.getStatus() != Status.SUSPENDED)
+            && task.getStatus() != Status.NEW
+            && task.getStatus() != Status.SUSPENDED)
             throw new IllegalStateException("Cannot finish task number " + number + ". Task status: " + task.getStatus());
 
         if ((task.getExecutor() == null && task.getTargetDepartment() == user.getDepartment())
-                || (task.getExecutor() != null && task.getExecutor().getId() == user.getId())
-                || (task.getOwner().getId() == user.getId())) {
+            || (task.getExecutor() != null && Objects.equals(task.getExecutor().getId(), user.getId()))
+            || (Objects.equals(task.getOwner().getId(), user.getId()))) {
 
             task.setStatus(Status.DONE);
             task.addSysMessage(user, SystemMessages.TASK_DONE);
@@ -156,12 +157,12 @@ public class TaskService {
         Task task = getByNumber(number);
 
         if (task.getStatus() != Status.IN_PROGRESS
-                && task.getStatus() != Status.NEW)
+            && task.getStatus() != Status.NEW)
             throw new IllegalStateException("Cannot suspended task number " + number + ". Task status: " + task.getStatus());
 
         if (task.getExecutor() == null && task.getExecutor().getDepartment() == user.getDepartment()
-                || task.getExecutor() != null && task.getExecutor().getId() == user.getId()
-                || task.getOwner().getId() == user.getId()) {
+            || task.getExecutor() != null && Objects.equals(task.getExecutor().getId(), user.getId())
+            || Objects.equals(task.getOwner().getId(), user.getId())) {
 
 
             task.setStatus(Status.SUSPENDED);
@@ -179,8 +180,8 @@ public class TaskService {
             throw new IllegalStateException("Cannot resume task number " + number + ". Task status: " + task.getStatus());
 
         if (task.getExecutor() == null && task.getExecutor().getDepartment() == user.getDepartment()
-                || task.getExecutor() != null && task.getExecutor().getId() == user.getId()
-                || task.getOwner().getId() == user.getId()) {
+            || task.getExecutor() != null && Objects.equals(task.getExecutor().getId(), user.getId())
+            || Objects.equals(task.getOwner().getId(), user.getId())) {
 
             task.setStatus(task.getExecutor() != null ? Status.IN_PROGRESS : Status.NEW);
             task.addSysMessage(user, SystemMessages.TASK_RESUMED);
@@ -194,7 +195,7 @@ public class TaskService {
     public void addAttachment(long number, MultipartFile file, User user, AttachmentSource source) {
         Task task = getByNumber(number);
         if (task.getStatus() != Status.NEW
-                && task.getStatus() != Status.IN_PROGRESS)
+            && task.getStatus() != Status.IN_PROGRESS)
             throw new IllegalStateException("Cannot add attachment. Task status: " + task.getStatus());
 
         String outPath = AttachmentUtils.save(number, file);
@@ -221,6 +222,32 @@ public class TaskService {
 
         notificationService.addNotifications(NotificationMessage.NEW_RELATED_TASK, number, task, user);
         notificationService.addNotifications(NotificationMessage.NEW_RELATED_TASK, number, relatedTask, user);
+    }
+
+    public void followTask(User user, long number, boolean state) {
+        Task task = getByNumber(number);
+        if (user.getDepartment() != task.getOwner().getDepartment()
+            && task.getTargetDepartment() != user.getDepartment())
+            throw new IllegalStateException("No permission for follow task " + number);
+
+        if (Objects.equals(task.getOwner().getId(), user.getId()))
+            throw new IllegalStateException("Cannot unfollow. You are Owner!");
+
+        if (task.getExecutor() != null && Objects.equals(task.getExecutor().getId(), user.getId()))
+            throw new IllegalStateException("Cannot unfollow. You are Executor!");
+
+        taskFollowService.changeFollowStatus(task, user, state);
+    }
+
+    public FollowButton getFollowButton(TaskDto task, User user) {
+        if (task.getOwner().getId() == user.getId()
+            || (task.getExecutor() != null && task.getExecutor().getId() == user.getId()))
+            return FollowButton.UNFOLLOW;
+
+        if (taskFollowService.isFollow(task.getNumber(), user.getUsername()))
+            return FollowButton.UNFOLLOW;
+
+        return FollowButton.FOLLOW;
     }
 
     private boolean isRelatedCase(Task task, long relatedTaskNumber) {

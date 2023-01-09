@@ -125,23 +125,28 @@
             <div class="card-header" th:style="'background-color:' + ${task.status.color}">
                 <div class="row">
                     <div class="col-md-6">
-                        <h3><span th:text="${task.title}">Task title</span></h3>
+                        <h3><span th:text="${'#' + task.number + ' | ' + task.title}">#0 | Task title</span></h3>
                     </div>
                     <div class="col-md-6" style="text-align:right">
-                        <h3><span th:text="${task.targetDepartment}">Department</span></h3>
+                        <form th:action="@{'/falsi/task/' + ${task.number} + '/follow'}" method="post">
+                            <input type="hidden" name="state" th:value="${followButton.value}">
+                            <button type="submit" th:text="${followButton.name}" th:class="${followButton.styleClass}"
+                            th:disabled="${task.owner.id==user.id || (task.executor!=null && task.executor.id==user.id)}"
+                            ></button>
+                        </form>
                     </div>
                 </div>
             </div>
             <div class="card-body">
 
-                <!--Task number -->
+                <!--Task Department -->
                 <div class="form-group row">
                     <div class="col-sm-2">
                         <label for="title" class="col-form-label"
-                               style="text-align:center;font-size:14px;border-style: groove;width:100%">Number</label>
+                               style="text-align:center;font-size:14px;border-style: groove;width:100%">Department</label>
                     </div>
                     <div class="col-sm-10">
-                        <h5 id="title" th:text="${task.number}" style="height:100%;width:100%">Number</h5>
+                        <h5 id="title" th:text="${task.targetDepartment}" style="height:100%;width:100%">Department</h5>
                     </div>
                 </div>
 

@@ -71,6 +71,7 @@ public class TaskController {
             model.addAttribute("error", ex.getMessage());
             return "task";
         }
+        model.addAttribute("followButton", taskService.getFollowButton(task, user));
         model.addAttribute("user", UserDtoMapper.parseToDto(user));
         model.addAttribute("task", task);
         model.addAttribute("message", new NewMessage());
@@ -154,6 +155,21 @@ public class TaskController {
         model.addAttribute("searchResults", taskService.search(searchOptionsDto));
         model.addAttribute("searchOptions", searchOptionsDto);
         return "search-result";
+    }
+
+    @PostMapping(UIConfig.TASK_FOLLOW)
+    public String follow(@PathVariable("number") long number,
+                         @RequestParam("state") boolean state,
+                         Authentication authentication,
+                         Model model) {
+        commonObjects.setData(model, authentication);
+        try {
+            taskService.followTask(userService.getByLogin(authentication.getName()), number, state);
+        } catch (Exception ex) {
+            model.addAttribute("error", ex.getMessage());
+            return taskPage(number, model, authentication);
+        }
+        return "redirect:" + UIConfig.TASK + "/" + number;
     }
 
     @GetMapping(UIConfig.TASK_SEARCH)

@@ -11,6 +11,7 @@ import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.repository.NotificationRepository;
 import pl.pacinho.failuremanagementsystem.ui.model.enums.NotificationMessage;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +23,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final NotificationWSController notificationWSController;
+    private final TaskFollowService taskFollowService;
 
     public List<Notification> findUnreadByUser(User user) {
         return notificationRepository.findAllByUserAndReadDateIsNullOrderByIdDesc(user);
@@ -54,9 +56,11 @@ public class NotificationService {
 
     private List<User> getUsersForNotifications(Task task, User user) {
         return Stream.of(
-                        user.getId() != task.getOwner().getId() ? task.getOwner() : null,
-                        task.getExecutor() != null && user.getId() != task.getExecutor().getId() ? task.getExecutor() : null
+                        Arrays.asList(user.getId() != task.getOwner().getId() ? task.getOwner() : null,
+                                task.getExecutor() != null && user.getId() != task.getExecutor().getId() ? task.getExecutor() : null),
+                        taskFollowService.getUsersByTaskNumber(task.getNumber())
                 )
+                .flatMap(List::stream)
                 .filter(Objects::nonNull)
                 .toList();
     }

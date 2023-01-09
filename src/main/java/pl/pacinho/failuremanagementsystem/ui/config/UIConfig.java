@@ -19,4 +19,5 @@ public class UIConfig {
     public static final String NOTIFICATION_READ_ALL = NOTIFICATION + "/read-all";
     public static final String NOTIFICATION_REFRESH = NOTIFICATION + "/refresh";
     public static final String TASK_SEARCH = TASK + "/search";
+    public static final String TASK_FOLLOW = TASK_PAGE + "/follow";
 }
