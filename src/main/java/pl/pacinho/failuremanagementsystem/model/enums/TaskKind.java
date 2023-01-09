@@ -5,5 +5,10 @@ public enum TaskKind {
     REQUESTED,
     OWN,
     DEP,
-    DONE
+    DONE,
+    REQUESTED_BY_DEP,
+    EXECUTED_BY_DEP,
+    REQUESTED_BY_USER,
+    EXECUTED_BY_USER,
+
 }

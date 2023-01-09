@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 
 public class TaskUtils {
 
-    public static Map<TaskKind, List<TaskDto>> groupByKind(List<TaskDto> tasks, User user) {
+    public static Map<TaskKind, List<TaskDto>> groupNotConfirmedByKind(List<TaskDto> tasks, User user) {
         return Map.ofEntries(
                 Map.entry(TaskKind.OWN,
                         filterTasks(tasks, (TaskDto t) -> t.getExecutor() != null && t.getExecutor().getId() == user.getId() && t.getStatus() == Status.IN_PROGRESS)),
@@ -24,9 +24,24 @@ public class TaskUtils {
                                                               || t.getStatus() == Status.SUSPENDED
                                                               || (t.getStatus() == Status.IN_PROGRESS && t.getExecutor().getId() != user.getId())))),
                 Map.entry(TaskKind.DONE,
-                        filterTasks(tasks, (TaskDto t) -> t.getStatus() == Status.DONE && t.getTargetDepartment()==user.getDepartment())),
+                        filterTasks(tasks, (TaskDto t) -> t.getStatus() == Status.DONE && t.getTargetDepartment() == user.getDepartment())),
                 Map.entry(TaskKind.REQUESTED,
-                        filterTasks(tasks, (TaskDto t) -> t.getOwner().getId() == user.getId() && t.getStatus()!=Status.CONFIRMED))
+                        filterTasks(tasks, (TaskDto t) -> t.getOwner().getId() == user.getId() && t.getStatus() != Status.CONFIRMED))
+        );
+    }
+
+    public static Map<TaskKind, List<TaskDto>> groupConfirmedByKind(List<TaskDto> tasks, User user) {
+        return Map.ofEntries(
+                Map.entry(TaskKind.REQUESTED_BY_USER,
+                        filterTasks(tasks, (TaskDto t) -> t.getOwner().getId() == user.getId())),
+                Map.entry(TaskKind.EXECUTED_BY_USER,
+                        filterTasks(tasks, (TaskDto t) -> t.getExecutor() != null && t.getExecutor().getId() == user.getId() && t.getOwner().getId() != user.getId())),
+                Map.entry(TaskKind.REQUESTED_BY_DEP,
+                        filterTasks(tasks, (TaskDto t) -> t.getOwner().getDepartment() == user.getDepartment() && t.getOwner().getId() != user.getId())),
+                Map.entry(TaskKind.EXECUTED_BY_DEP,
+                        filterTasks(tasks, (TaskDto t) -> t.getTargetDepartment() == user.getDepartment()
+                                                          && ( t.getExecutor()==null ||
+                                                               (t.getExecutor().getId() != user.getId()) && t.getExecutor().getId() != t.getOwner().getId())))
         );
     }
 
@@ -58,7 +73,7 @@ public class TaskUtils {
             return actions2;
         }
 
-        if(task.getTargetDepartment()!=user.getDepartment()) {
+        if (task.getTargetDepartment() != user.getDepartment()) {
             ArrayList<TaskAction> actions2 = new ArrayList<>(actions);
             actions2.remove(TaskAction.FINISH);
             return actions2;

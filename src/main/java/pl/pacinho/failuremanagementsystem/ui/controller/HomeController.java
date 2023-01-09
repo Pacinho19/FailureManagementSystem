@@ -40,7 +40,7 @@ public class HomeController {
                        Authentication authentication) {
 
         User user = commonObjects.setData(model, authentication);
-        Map<TaskKind, List<TaskDto>> tasksKinds = TaskUtils.groupByKind(
+        Map<TaskKind, List<TaskDto>> tasksKinds = TaskUtils.groupNotConfirmedByKind(
                 taskService.findByDepartmentOrOwnerNotConfirmed(user.getDepartment(), user),
                 user
         );

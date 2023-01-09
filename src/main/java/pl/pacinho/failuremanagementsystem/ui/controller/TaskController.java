@@ -2,19 +2,17 @@ package pl.pacinho.failuremanagementsystem.ui.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.pacinho.failuremanagementsystem.model.dto.mapper.UserDtoMapper;
-import pl.pacinho.failuremanagementsystem.model.entity.Attachment;
 import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.model.enums.AttachmentSource;
+import pl.pacinho.failuremanagementsystem.model.enums.TaskKind;
 import pl.pacinho.failuremanagementsystem.service.AttachmentService;
-import pl.pacinho.failuremanagementsystem.service.NotificationService;
 import pl.pacinho.failuremanagementsystem.service.TaskService;
 import pl.pacinho.failuremanagementsystem.service.UserService;
 import pl.pacinho.failuremanagementsystem.ui.config.UIConfig;
@@ -27,8 +25,8 @@ import pl.pacinho.failuremanagementsystem.ui.tools.TaskUtils;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -177,5 +175,21 @@ public class TaskController {
                          Model model) {
         commonObjects.setData(model, authentication);
         return "search-result";
+    }
+
+    @GetMapping(UIConfig.TASK_ARCHIVES)
+    public String archives(Authentication authentication,
+                           Model model) {
+        User user = commonObjects.setData(model, authentication);
+        Map<TaskKind, List<TaskDto>> tasksKinds = TaskUtils.groupConfirmedByKind(
+                taskService.findByDepartmentOrOwnerConfirmed(user.getDepartment(), user),
+               user
+        );
+
+        model.addAttribute("requestedByUser", tasksKinds.get(TaskKind.REQUESTED_BY_USER));
+        model.addAttribute("requestedByDep", tasksKinds.get(TaskKind.REQUESTED_BY_DEP));
+        model.addAttribute("executedByUser", tasksKinds.get(TaskKind.EXECUTED_BY_USER));
+        model.addAttribute("executedByDep", tasksKinds.get(TaskKind.EXECUTED_BY_DEP));
+        return "archives";
     }
 }

@@ -19,6 +19,7 @@ import pl.pacinho.failuremanagementsystem.ui.tools.SystemMessages;
 import pl.pacinho.failuremanagementsystem.utils.AttachmentUtils;
 import pl.pacinho.failuremanagementsystem.utils.CollectionsUtils;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -59,24 +60,57 @@ public class TaskService {
         notificationService.addNotifications(NotificationMessage.NEW_MESSAGE, number, task, user);
     }
 
-    public List<TaskDto> findByDepartmentNotConfirmed(Department department) {
-        return taskRepository.findByTargetDepartmentAndStatusNot(department, Status.CONFIRMED)
+    public List<TaskDto> findByDepartmentAndStatusNot(Department department, Status status) {
+        return taskRepository.findByTargetDepartmentAndStatusNot(department, status)
                 .stream()
                 .map(TaskDtoMapper::toDto)
                 .toList();
     }
 
-    public List<TaskDto> findByOwnerNotConfirmed(User user) {
-        return taskRepository.findByOwnerAndStatusNot(user, Status.CONFIRMED)
+    public List<TaskDto> findByOwnerNotAndStatusNot(User user, Status status) {
+        return taskRepository.findByOwnerAndStatusNot(user, status)
                 .stream()
                 .map(TaskDtoMapper::toDto)
+                .toList();
+    }
+
+
+    private  List<TaskDto> findByOwnerDepartmentAndStatusEquals(Department department, Status status) {
+        return taskRepository.findByOwnerDepartmentEqualsAndStatusEquals(department, status)
+                .stream()
+                .map(TaskDtoMapper::toDto)
+                .toList();
+    }
+    private  List<TaskDto> findByDepartmentAndStatusEquals(Department department, Status status) {
+        return taskRepository.findByTargetDepartmentAndStatusEquals(department, status)
+                .stream()
+                .map(TaskDtoMapper::toDto)
+                .toList();
+    }
+
+    private List<TaskDto> findByOwnerNotAndStatusEquals(User user, Status status) {
+        return taskRepository.findByOwnerAndStatusEquals(user, status)
+                .stream()
+                .map(TaskDtoMapper::toDto)
+                .toList();
+    }
+
+    public List<TaskDto> findByDepartmentOrOwnerConfirmed(Department department, User user) {
+        return Stream.of(
+                        findByDepartmentAndStatusEquals(department, Status.CONFIRMED),
+                        findByOwnerNotAndStatusEquals(user, Status.CONFIRMED),
+                        findByOwnerDepartmentAndStatusEquals(department, Status.CONFIRMED)
+                )
+                .flatMap(List::stream)
+                .filter(CollectionsUtils.distinctByKey(TaskDto::getNumber))
+                .sorted(Comparator.comparing(TaskDto::getNumber).reversed())
                 .toList();
     }
 
     public List<TaskDto> findByDepartmentOrOwnerNotConfirmed(Department department, User user) {
         return Stream.of(
-                        findByDepartmentNotConfirmed(department),
-                        findByOwnerNotConfirmed(user)
+                        findByDepartmentAndStatusNot(department, Status.CONFIRMED),
+                        findByOwnerNotAndStatusNot(user, Status.CONFIRMED)
                 )
                 .flatMap(List::stream)
                 .filter(CollectionsUtils.distinctByKey(TaskDto::getNumber))
