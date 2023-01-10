@@ -1,7 +1,6 @@
 package pl.pacinho.failuremanagementsystem.ui.tools;
 
 import pl.pacinho.failuremanagementsystem.model.entity.User;
-import pl.pacinho.failuremanagementsystem.model.enums.Status;
 import pl.pacinho.failuremanagementsystem.model.enums.TaskSummaryType;
 import pl.pacinho.failuremanagementsystem.ui.model.TaskDto;
 import pl.pacinho.failuremanagementsystem.ui.model.TaskSummaryItem;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public class TaskStatusUtils {
     public static boolean checkCanFinish(TaskDto task, User user) {
-        if (task.getStatus() == Status.NEW && (task.getOwner().getId() == user.getId() || task.getTargetDepartment()==user.getDepartment()))
+        if (task.getOwner().getId() == user.getId() || task.getTargetDepartment()==user.getDepartment())
             return true;
 
         if (task.getTaskSummary() == null || task.getTaskSummary().summaryItems().isEmpty())

@@ -426,7 +426,7 @@
                             </th:block>
 
                             <div class="input-group"
-                                 th:if="${task.targetDepartment==user.department
+                                 th:if="${((task.executor!=null && task.executor.id==user.id) || (task.executor==null && task.targetDepartment==user.department))
                                  && (task.status.name=='NEW' || task.status.name=='IN_PROGRESS')}"
                                  style="width:70%;">
                                 <form method="post"
