@@ -65,6 +65,9 @@ public class Task {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "task", cascade = CascadeType.ALL)
     private List<TaskMessage> messages;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "task", cascade = CascadeType.ALL)
+    private List<TaskSummary> summary;
+
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Task> relatedTasks;
 
@@ -80,6 +83,7 @@ public class Task {
         this.priority = priority;
         this.creationDate = LocalDateTime.now();
         this.attachments = new ArrayList<>();
+        this.summary = new ArrayList<>();
         this.messages = new ArrayList<>();
         this.relatedTasks = new HashSet<>();
         this.status = Status.NEW;
@@ -105,8 +109,12 @@ public class Task {
                 new Attachment(path, originalName, this, user, source)
         );
     }
-    public void addRelatedTask(Task task){
+    public void addRelatedTask(Task task) {
         relatedTasks.add(task);
+    }
+
+    public void addSummary(TaskSummary taskSummary) {
+        summary.add(taskSummary);
     }
 
 }

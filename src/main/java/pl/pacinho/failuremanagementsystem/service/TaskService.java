@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import pl.pacinho.failuremanagementsystem.exception.TaskNotFoundException;
 import pl.pacinho.failuremanagementsystem.model.entity.TaskMessage;
+import pl.pacinho.failuremanagementsystem.model.entity.TaskSummary;
 import pl.pacinho.failuremanagementsystem.model.enums.AttachmentSource;
 import pl.pacinho.failuremanagementsystem.model.enums.Department;
 import pl.pacinho.failuremanagementsystem.model.enums.Status;
@@ -16,6 +17,7 @@ import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.repository.TaskRepository;
 import pl.pacinho.failuremanagementsystem.ui.tools.SystemMessages;
+import pl.pacinho.failuremanagementsystem.ui.tools.TaskStatusUtils;
 import pl.pacinho.failuremanagementsystem.utils.AttachmentUtils;
 import pl.pacinho.failuremanagementsystem.utils.CollectionsUtils;
 
@@ -75,13 +77,14 @@ public class TaskService {
     }
 
 
-    private  List<TaskDto> findByOwnerDepartmentAndStatusEquals(Department department, Status status) {
+    private List<TaskDto> findByOwnerDepartmentAndStatusEquals(Department department, Status status) {
         return taskRepository.findByOwnerDepartmentEqualsAndStatusEquals(department, status)
                 .stream()
                 .map(TaskDtoMapper::toDto)
                 .toList();
     }
-    private  List<TaskDto> findByDepartmentAndStatusEquals(Department department, Status status) {
+
+    private List<TaskDto> findByDepartmentAndStatusEquals(Department department, Status status) {
         return taskRepository.findByTargetDepartmentAndStatusEquals(department, status)
                 .stream()
                 .map(TaskDtoMapper::toDto)
@@ -145,16 +148,19 @@ public class TaskService {
             && task.getStatus() != Status.SUSPENDED)
             throw new IllegalStateException("Cannot finish task number " + number + ". Task status: " + task.getStatus());
 
-        if ((task.getExecutor() == null && task.getTargetDepartment() == user.getDepartment())
-            || (task.getExecutor() != null && Objects.equals(task.getExecutor().getId(), user.getId()))
-            || (Objects.equals(task.getOwner().getId(), user.getId()))) {
+        if (!TaskStatusUtils.checkCanFinish(TaskDtoMapper.toDto(task), user)  )
+            throw new IllegalStateException("Cannot finish task number " + number + ". Task summary must be  filled!");
 
-            task.setStatus(Status.DONE);
-            task.addSysMessage(user, SystemMessages.TASK_DONE);
-            notificationService.addNotifications(NotificationMessage.CHANGE_TASK_STATUS, number, task, user);
+            if ((task.getExecutor() == null && task.getTargetDepartment() == user.getDepartment())
+                || (task.getExecutor() != null && Objects.equals(task.getExecutor().getId(), user.getId()))
+                || (Objects.equals(task.getOwner().getId(), user.getId()))) {
 
-        } else
-            throw new IllegalStateException("No permission for change task " + number + " status ");
+                task.setStatus(Status.DONE);
+                task.addSysMessage(user, SystemMessages.TASK_DONE);
+                notificationService.addNotifications(NotificationMessage.CHANGE_TASK_STATUS, number, task, user);
+
+            } else
+                throw new IllegalStateException("No permission for change task " + number + " status ");
 
     }
 
@@ -181,7 +187,7 @@ public class TaskService {
         if (task.getStatus() != Status.DONE)
             throw new IllegalStateException("Cannot decline task number " + number + ". Task status: " + task.getStatus());
 
-        task.setStatus(Status.IN_PROGRESS);
+        task.setStatus(task.getExecutor()!=null ? Status.IN_PROGRESS : Status.NEW);
         task.addSysMessage(user, SystemMessages.TASK_DECLINED);
         notificationService.addNotifications(NotificationMessage.CHANGE_TASK_STATUS, number, task, user);
     }
@@ -292,5 +298,26 @@ public class TaskService {
 
     public List<SearchResultDto> search(SearchOptionsDto searchOptionsDto) {
         return searchService.search(searchOptionsDto);
+    }
+
+    @Transactional
+    public void addSummary(long number, User user, SummaryInput summaryInput) {
+        Task task = getByNumber(number);
+
+        if (task.getExecutor() != null && !Objects.equals(task.getExecutor().getId(), user.getId())
+            || (task.getExecutor() == null && task.getTargetDepartment() != user.getDepartment()))
+            throw new IllegalStateException("No permission for  adding summary");
+
+        if (task.getStatus() == Status.CONFIRMED || task.getStatus() == Status.SUSPENDED)
+            throw new IllegalStateException("Cannot adding summary message. Task status: " + task.getStatus());
+
+        summaryInput.getValues()
+                .forEach((type, text) -> {
+                    if (text == null || text.isEmpty()) return;
+
+                    task.addSummary(
+                            new TaskSummary(user, task, text, type)
+                    );
+                });
     }
 }

@@ -7,6 +7,7 @@ import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.ui.model.mapper.AttachmentDtoMapper;
 import pl.pacinho.failuremanagementsystem.ui.model.mapper.MessageDtoMapper;
 import pl.pacinho.failuremanagementsystem.ui.model.mapper.TaskDtoMapper;
+import pl.pacinho.failuremanagementsystem.ui.model.mapper.TaskSummaryDtoMapper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ public class TaskDto extends TaskModel {
     private List<AttachmentDto> attachments;
     private List<RelatedTaskDto> relatedTasks;
 
+    private TaskSummaryDto taskSummary;
+
     public TaskDto(Task task) {
         this.setTitle(task.getTitle());
         this.setDeadlineDate(task.getDeadlineDate());
@@ -44,8 +47,9 @@ public class TaskDto extends TaskModel {
         this.creationDate = task.getCreationDate();
         this.messages = MessageDtoMapper.parseList(task.getMessages());
         this.messages.sort(Collections.reverseOrder(Comparator.comparing(MessageDto::dateTime)));
-        this.attachments= AttachmentDtoMapper.parseList(task.getAttachments());
+        this.attachments = AttachmentDtoMapper.parseList(task.getAttachments());
         this.relatedTasks = TaskDtoMapper.parseRelatedTasks(task.getRelatedTasks());
+        this.taskSummary = TaskSummaryDtoMapper.parse(task.getSummary());
     }
 
     public long getDeadlineDays() {

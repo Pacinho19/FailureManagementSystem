@@ -54,7 +54,6 @@
 
 
 
-
     </style>
 
     <script>
@@ -87,7 +86,6 @@
 
 
 
-
     </script>
 
     <script>
@@ -96,7 +94,6 @@
             document.getElementById("action").value = actionName;
             form.submit();
         }
-
 
 
 
@@ -111,7 +108,6 @@
 
 
 
-
     </script>
 
     <script>
@@ -120,7 +116,6 @@
             document.getElementById("quoteMessage").innerHTML=null;
             document.getElementById("quote").style.display="none";
         }
-
 
 
 
@@ -273,7 +268,8 @@
                             </div>
                             <div class="col-sm-8">
                                 <div class="row" style="width:100%;margin-left:0">
-                                    <h5 id="owner" th:text="${task.owner.getName()}" style="height:100%;margin-left:0">Owner
+                                    <h5 id="owner" th:text="${task.owner.getName()}" style="height:100%;margin-left:0">
+                                        Owner
                                     </h5>
                                 </div>
                             </div>
@@ -309,8 +305,9 @@
                             </h5>
 
                             <div class="row" style="margin-left:5%" th:each="action : ${actions}">
-                                <button th:class="${action.buttonClass}" type="button" th:text="${action.name}"
-                                        th:onclick="return action([[${action.name}]])">
+                                <button th:class="${action.buttonClass}" type="button" th:text="${action.name=='FINISH' && !canFinish ? (action.name + '[Complete summary!]' ): action.name}"
+                                        th:onclick="return action([[${action.name}]])"
+                                        th:disabled="${action.name=='FINISH' && !canFinish}">
                                     btn
                                 </button>
                             </div>
@@ -363,8 +360,7 @@
                             </th:block>
 
                             <div class="input-group"
-                                 th:if="${task.owner!=null && task.owner.department==user.department
-                                 && (task.status.name=='NEW' || task.status.name=='IN_PROGRESS')}"
+                                 th:if="${task.owner.id==user.id && (task.status.name=='NEW' || task.status.name=='IN_PROGRESS')}"
                                  style="width:70%;">
 
                                 <form method="post"
@@ -512,6 +508,7 @@
 
             </div>
 
+            <!-- Task Quote Message-->
             <div class="form-group row">
                 <div class="col-md-12" style="text-align:center;display:none" id="quote">
                     <div style="width:90%;;margin-left:auto;margin-right:auto;">
@@ -532,6 +529,7 @@
                 </div>
             </div>
 
+            <!-- Task Send Message-->
             <form th:action="@{'/falsi/task/' + ${task.number} + '/message'}" th:object="${message}" method="post"
                   th:if="${task.status.name=='NEW' || task.status.name=='IN_PROGRESS'}">
                 <div class="form-group row">
@@ -547,6 +545,7 @@
                 </div>
             </form>
 
+            <!-- Task Messages-->
             <div th:each="comment: ${task.messages} " class="col-md-12"
                  style="text-align:center;margin-bottom:2%;display:block">
                 <div class="bg-white p-2">
@@ -583,6 +582,45 @@
                     </div>
                 </div>
                 <hr>
+            </div>
+
+            <!--Task Summary-->
+            <div class="col-md-12">
+                <form method="post" th:action="@{'/falsi/task/'  + ${task.number} + '/summary'}"
+                      th:object="${summaryInput}">
+                    <div class="row" style="margin-top:1%" th:each="property : ${summaryInput.values.entrySet()}">
+                        <div class="col-md-12">
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 th:text="${property.key}">Property</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div style="text-align:left;margin-top:1%" class="mt-2"
+                                         th:each=" summary : ${task.taskSummary.summaryItems.get(property.key)}">
+                                        <figure class="quote" style="margin-left:auto;margin-right:auto">
+                                            <p style="text-align:left"
+                                               th:text="${'---   ' + summary.user.getName() + '    [' + #temporals.format(summary.creationTime, 'dd-MM-yyyy HH:mm') +']'}"></p>
+                                            <blockquote style="text-align:left;white-space: pre-line;"
+                                                        th:text="${summary.text}">
+                                            </blockquote>
+                                        </figure>
+                                    </div>
+                                </div>
+
+                                <textarea class="form-control" th:field="*{values['__${property.key}__']}" rows="2"
+                                          cols="2" style="margin-top:1%" th:if="${task.executor!=null
+                                          && task.executor.id==user.id && task.status.name!='CONFIRMED'
+                                          && task.status.name!='SUSPENDED'}"></textarea>
+                            </div>
+
+                        </div>
+                        <hr>
+                    </div>
+                    <button type="submit" style="margin-top:1%;width:100%;" class="btn btn-primary" th:if="${task.executor!=null
+                                          && task.executor.id==user.id && task.status.name!='CONFIRMED'
+                                          && task.status.name!='SUSPENDED'}">Update</button>
+                </form>
             </div>
         </div>
     </div>

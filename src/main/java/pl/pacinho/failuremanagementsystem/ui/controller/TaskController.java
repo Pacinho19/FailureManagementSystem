@@ -12,6 +12,7 @@ import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.model.enums.AttachmentSource;
 import pl.pacinho.failuremanagementsystem.model.enums.TaskKind;
+import pl.pacinho.failuremanagementsystem.model.enums.TaskSummaryType;
 import pl.pacinho.failuremanagementsystem.service.AttachmentService;
 import pl.pacinho.failuremanagementsystem.service.TaskService;
 import pl.pacinho.failuremanagementsystem.service.UserService;
@@ -20,6 +21,7 @@ import pl.pacinho.failuremanagementsystem.ui.model.*;
 import pl.pacinho.failuremanagementsystem.ui.taksaction.model.TaskAction;
 import pl.pacinho.failuremanagementsystem.ui.taksaction.model.TaskStatus;
 import pl.pacinho.failuremanagementsystem.ui.tools.CommonObjects;
+import pl.pacinho.failuremanagementsystem.ui.tools.TaskStatusUtils;
 import pl.pacinho.failuremanagementsystem.ui.tools.TaskUtils;
 
 import javax.servlet.ServletOutputStream;
@@ -73,6 +75,8 @@ public class TaskController {
         model.addAttribute("user", UserDtoMapper.parseToDto(user));
         model.addAttribute("task", task);
         model.addAttribute("message", new NewMessage());
+        model.addAttribute("summaryInput", new SummaryInput());
+        model.addAttribute("canFinish", TaskStatusUtils.checkCanFinish(task, user));
         return "task";
     }
 
@@ -183,7 +187,7 @@ public class TaskController {
         User user = commonObjects.setData(model, authentication);
         Map<TaskKind, List<TaskDto>> tasksKinds = TaskUtils.groupConfirmedByKind(
                 taskService.findByDepartmentOrOwnerConfirmed(user.getDepartment(), user),
-               user
+                user
         );
 
         model.addAttribute("requestedByUser", tasksKinds.get(TaskKind.REQUESTED_BY_USER));
@@ -192,4 +196,19 @@ public class TaskController {
         model.addAttribute("executedByDep", tasksKinds.get(TaskKind.EXECUTED_BY_DEP));
         return "archives";
     }
+
+    @PostMapping(UIConfig.TASK_SUMMARY)
+    public String taskSummary(@PathVariable("number") long number,
+                              SummaryInput summaryInput,
+                              Model model,
+                              Authentication authentication) {
+        try {
+            taskService.addSummary(number, userService.getByLogin(authentication.getName()), summaryInput);
+        } catch (Exception ex) {
+            model.addAttribute("error", ex.getMessage());
+            return taskPage(number, model, authentication);
+        }
+        return "redirect:" + UIConfig.TASK + "/" + number;
+    }
+
 }
