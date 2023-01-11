@@ -10,7 +10,7 @@ import java.util.List;
 
 public class TaskStatusUtils {
     public static boolean checkCanFinish(TaskDto task, User user) {
-        if (task.getOwner().getId() == user.getId() || task.getTargetDepartment()==user.getDepartment())
+        if (task.getOwner().getId() == user.getId() || (task.getExecutor()==null && task.getTargetDepartment()==user.getDepartment()))
             return true;
 
         if (task.getTaskSummary() == null || task.getTaskSummary().summaryItems().isEmpty())

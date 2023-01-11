@@ -12,7 +12,6 @@ import pl.pacinho.failuremanagementsystem.model.entity.Task;
 import pl.pacinho.failuremanagementsystem.model.entity.User;
 import pl.pacinho.failuremanagementsystem.model.enums.AttachmentSource;
 import pl.pacinho.failuremanagementsystem.model.enums.TaskKind;
-import pl.pacinho.failuremanagementsystem.model.enums.TaskSummaryType;
 import pl.pacinho.failuremanagementsystem.service.AttachmentService;
 import pl.pacinho.failuremanagementsystem.service.TaskService;
 import pl.pacinho.failuremanagementsystem.service.UserService;
