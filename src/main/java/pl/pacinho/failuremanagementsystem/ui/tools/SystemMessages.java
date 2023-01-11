@@ -10,4 +10,9 @@ public class SystemMessages {
     public static final String TASK_SUSPENDED = SYS_PREFIX + "Task suspended.";
     public static final String TASK_RESUMED = SYS_PREFIX + "Task resumed.";
     public static final String TASK_ADD_RELATED = SYS_PREFIX + "Associated with the task ";
+    public static final String TASK_ADD_ATTACHMENT = SYS_PREFIX + " Attachment added:\n* ";
+
+    public static final String TASK_ATTACHMENT_ADDED(String attachmentName) {
+        return TASK_ADD_ATTACHMENT + attachmentName;
+    }
 }

@@ -1,6 +1,7 @@
 package pl.pacinho.failuremanagementsystem.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -240,6 +241,7 @@ public class TaskService {
 
         String outPath = AttachmentUtils.save(number, file);
         task.addAttachment(outPath, file.getOriginalFilename(), user, source);
+        task.addSysMessage(user, SystemMessages.TASK_ATTACHMENT_ADDED(FilenameUtils.getName(outPath)));
         notificationService.addNotifications(NotificationMessage.NEW_ATTACHMENT, number, task, user);
     }
 
